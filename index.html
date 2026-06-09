@@ -1,0 +1,815 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Prompt Keeper</title>
+  <link rel="icon" href="data:," />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Thai:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script>
+    window.tailwind = window.tailwind || {};
+    window.tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Noto Sans Thai', 'Inter', 'ui-sans-serif', 'system-ui']
+          }
+        }
+      }
+    };
+  </script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #172033;
+      --muted: #667085;
+      --glass: rgba(255, 255, 255, 0.44);
+      --glass-strong: rgba(255, 255, 255, 0.66);
+      --line: rgba(255, 255, 255, 0.72);
+      --shadow: 0 28px 80px rgba(64, 87, 125, 0.20);
+      --aqua: #10b8b1;
+      --blue: #246fe5;
+      --coral: #ff714f;
+      --gold: #f7c948;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      color: var(--ink);
+      background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.88), rgba(236, 249, 255, 0.66) 28%, rgba(238, 255, 248, 0.72) 54%, rgba(255, 241, 229, 0.74) 78%, rgba(248, 250, 255, 0.92)),
+        linear-gradient(110deg, #eef6ff 0%, #f7fbff 38%, #fff3e9 66%, #effcf9 100%);
+      font-family: "Noto Sans Thai", "Inter", system-ui, sans-serif;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(115deg, rgba(36, 111, 229, 0.12), transparent 30%),
+        linear-gradient(240deg, rgba(16, 184, 177, 0.16), transparent 34%),
+        linear-gradient(12deg, transparent 48%, rgba(255, 113, 79, 0.15) 70%, transparent 100%);
+      filter: blur(12px);
+      opacity: 0.95;
+    }
+
+    .glass-shell {
+      position: relative;
+      border: 1px solid rgba(255, 255, 255, 0.68);
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.68), rgba(255, 255, 255, 0.28));
+      box-shadow: var(--shadow), inset 0 1px 1px rgba(255, 255, 255, 0.72);
+      backdrop-filter: blur(22px) saturate(145%);
+      -webkit-backdrop-filter: blur(22px) saturate(145%);
+    }
+
+    .glass-control {
+      border: 1px solid rgba(255, 255, 255, 0.78);
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.48)),
+        rgba(255, 255, 255, 0.42);
+      box-shadow:
+        0 14px 26px rgba(74, 92, 128, 0.13),
+        inset 0 1px 1px rgba(255, 255, 255, 0.9),
+        inset 0 -1px 1px rgba(97, 122, 166, 0.12);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+    }
+
+    .glass-control:hover {
+      transform: translateY(-1px);
+      border-color: rgba(255, 255, 255, 0.92);
+      box-shadow:
+        0 18px 34px rgba(74, 92, 128, 0.16),
+        inset 0 1px 1px rgba(255, 255, 255, 0.95),
+        inset 0 -1px 1px rgba(97, 122, 166, 0.16);
+    }
+
+    .primary-glass {
+      color: white;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.34), rgba(255, 255, 255, 0.05)),
+        linear-gradient(115deg, var(--coral), var(--gold) 48%, var(--aqua) 100%);
+      box-shadow:
+        0 18px 36px rgba(255, 113, 79, 0.24),
+        0 10px 28px rgba(16, 184, 177, 0.18),
+        inset 0 1px 1px rgba(255, 255, 255, 0.58);
+      text-shadow: 0 1px 12px rgba(32, 44, 68, 0.18);
+    }
+
+    .danger-glass {
+      color: #b42318;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.82), rgba(255, 255, 255, 0.48)),
+        rgba(255, 238, 235, 0.58);
+    }
+
+    .field {
+      width: 100%;
+      border: 1px solid rgba(255, 255, 255, 0.74);
+      background: rgba(255, 255, 255, 0.48);
+      box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.72), 0 10px 24px rgba(70, 86, 120, 0.08);
+      outline: none;
+      transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
+    }
+
+    .field:focus {
+      border-color: rgba(36, 111, 229, 0.42);
+      background: rgba(255, 255, 255, 0.72);
+      box-shadow: 0 0 0 4px rgba(36, 111, 229, 0.10), inset 0 1px 1px rgba(255, 255, 255, 0.85);
+    }
+
+    .prompt-card {
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.72);
+      background:
+        linear-gradient(165deg, rgba(255, 255, 255, 0.70), rgba(255, 255, 255, 0.34)),
+        rgba(255, 255, 255, 0.44);
+      box-shadow:
+        0 22px 52px rgba(61, 78, 112, 0.15),
+        inset 0 1px 1px rgba(255, 255, 255, 0.75);
+      backdrop-filter: blur(20px) saturate(140%);
+      -webkit-backdrop-filter: blur(20px) saturate(140%);
+    }
+
+    .prompt-card.editing {
+      border-color: rgba(16, 184, 177, 0.58);
+      box-shadow:
+        0 22px 54px rgba(16, 184, 177, 0.16),
+        inset 0 1px 1px rgba(255, 255, 255, 0.78);
+    }
+
+    .image-frame {
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.72);
+      background: rgba(255, 255, 255, 0.36);
+      box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.72);
+      overflow: hidden;
+    }
+
+    .image-frame img {
+      background:
+        linear-gradient(145deg, rgba(255, 255, 255, 0.50), rgba(235, 248, 255, 0.24)),
+        rgba(255, 255, 255, 0.30);
+    }
+
+    .keeper-grid {
+      grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 280px));
+      justify-content: start;
+      align-items: start;
+    }
+
+    .page-tab.active {
+      color: white;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.34), rgba(255, 255, 255, 0.07)),
+        linear-gradient(115deg, #246fe5, #10b8b1);
+      box-shadow:
+        0 16px 30px rgba(36, 111, 229, 0.18),
+        inset 0 1px 1px rgba(255, 255, 255, 0.58);
+    }
+
+    .soft-scroll::-webkit-scrollbar {
+      width: 10px;
+      height: 10px;
+    }
+
+    .soft-scroll::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.32);
+      border-radius: 999px;
+    }
+
+    .soft-scroll::-webkit-scrollbar-thumb {
+      background: rgba(88, 111, 146, 0.30);
+      border: 3px solid rgba(255, 255, 255, 0.44);
+      border-radius: 999px;
+    }
+
+    .toast {
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(14px);
+      transition: opacity 180ms ease, transform 180ms ease;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media (max-width: 640px) {
+      .mobile-tight {
+        padding-left: 1rem;
+        padding-right: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="relative z-10 mx-auto flex min-h-screen w-full max-w-7xl flex-col gap-6 px-5 py-6 sm:px-8 lg:px-10">
+    <header class="glass-shell flex flex-col gap-4 rounded-[1.15rem] px-5 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+      <div class="min-w-0">
+        <div class="mb-2 inline-flex items-center gap-2 rounded-full border border-white/70 bg-white/40 px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-slate-500 shadow-sm">
+          <i data-lucide="sparkles" class="h-3.5 w-3.5 text-cyan-600"></i>
+          Prompt Keeper
+        </div>
+        <h1 class="text-3xl font-extrabold tracking-normal text-slate-900 sm:text-4xl">คลังพรอมต์ส่วนตัว</h1>
+      </div>
+      <div class="flex flex-wrap items-center gap-3">
+        <div class="glass-control flex min-w-[8.5rem] items-center justify-center gap-2 rounded-full px-4 py-3 text-sm font-semibold text-slate-700">
+          <i data-lucide="lock" class="h-4 w-4 text-emerald-600"></i>
+          <span><span id="promptCount">0</span> การ์ด</span>
+        </div>
+        <button id="clearFormBtn" type="button" class="glass-control inline-flex items-center gap-2 rounded-full px-4 py-3 text-sm font-semibold text-slate-700">
+          <i data-lucide="rotate-ccw" class="h-4 w-4"></i>
+          ล้างฟอร์ม
+        </button>
+      </div>
+    </header>
+
+    <section class="grid flex-1 gap-6 lg:grid-cols-[minmax(320px,420px)_1fr]">
+      <form id="promptForm" class="glass-shell h-fit rounded-[1.15rem] p-4 sm:p-5 lg:sticky lg:top-6" autocomplete="off">
+        <div class="mb-5 flex items-center justify-between gap-3">
+          <div>
+            <h2 id="formTitle" class="text-xl font-bold text-slate-900">เพิ่มพรอมต์</h2>
+            <p id="formMode" class="text-sm font-medium text-slate-500">การ์ดจะล็อกหลังบันทึก</p>
+          </div>
+          <span id="modeBadge" class="glass-control inline-flex items-center gap-2 rounded-full px-3 py-2 text-xs font-bold text-slate-600">
+            <i data-lucide="shield-check" class="h-4 w-4 text-cyan-600"></i>
+            พร้อมบันทึก
+          </span>
+        </div>
+
+        <div class="space-y-4">
+          <label class="block">
+            <span class="mb-2 block text-sm font-bold text-slate-700">หัวข้อ</span>
+            <input id="titleInput" class="field rounded-full px-4 py-3 text-base text-slate-900 placeholder:text-slate-400" type="text" maxlength="80" placeholder="เช่น ภาพสินค้าโทนพรีเมียม" />
+          </label>
+
+          <label class="block">
+            <span class="mb-2 block text-sm font-bold text-slate-700">พรอมต์</span>
+            <textarea id="promptInput" class="field soft-scroll min-h-[190px] resize-y rounded-[1rem] px-4 py-3 text-base leading-7 text-slate-900 placeholder:text-slate-400" required placeholder="วางพรอมต์ของคุณที่นี่"></textarea>
+          </label>
+
+          <label class="block">
+            <span class="mb-2 block text-sm font-bold text-slate-700">หมายเหตุ / แท็ก</span>
+            <textarea id="notesInput" class="field soft-scroll min-h-[86px] resize-y rounded-[1rem] px-4 py-3 text-sm leading-6 text-slate-800 placeholder:text-slate-400" maxlength="1400" placeholder="#portrait #glass #thai"></textarea>
+          </label>
+
+          <div>
+            <span class="mb-2 block text-sm font-bold text-slate-700">รูปภาพ</span>
+            <label for="imageInput" class="glass-control flex cursor-pointer items-center justify-between gap-3 rounded-[1rem] px-4 py-4 text-slate-700">
+              <span class="flex min-w-0 items-center gap-3">
+                <span class="grid h-10 w-10 flex-none place-items-center rounded-full bg-white/50 text-cyan-700 shadow-inner">
+                  <i data-lucide="image-plus" class="h-5 w-5"></i>
+                </span>
+                <span class="min-w-0">
+                  <span id="imageLabel" class="block truncate text-sm font-bold">เลือกรูปจากเครื่อง</span>
+                  <span class="block truncate text-xs font-medium text-slate-500">JPG, PNG, WebP</span>
+                </span>
+              </span>
+              <i data-lucide="plus" class="h-5 w-5 flex-none text-slate-500"></i>
+            </label>
+            <input id="imageInput" class="hidden" type="file" accept="image/*" />
+          </div>
+
+          <div id="previewWrap" class="hidden image-frame relative aspect-[4/3] w-full">
+            <img id="imagePreview" class="h-full w-full object-contain" alt="Preview" />
+            <button id="removeImageBtn" type="button" class="glass-control absolute right-3 top-3 inline-flex h-10 w-10 items-center justify-center rounded-full text-slate-700" title="ลบรูป">
+              <i data-lucide="x" class="h-5 w-5"></i>
+            </button>
+          </div>
+
+          <div class="flex flex-col gap-3 sm:flex-row">
+            <button id="saveBtn" type="submit" class="primary-glass glass-control inline-flex min-h-[3.35rem] flex-1 items-center justify-center gap-2 rounded-full px-5 py-3 text-base font-extrabold">
+              <i data-lucide="save" class="h-5 w-5"></i>
+              <span id="saveBtnText">บันทึกและล็อก</span>
+            </button>
+            <button id="cancelEditBtn" type="button" class="glass-control hidden min-h-[3.35rem] items-center justify-center gap-2 rounded-full px-5 py-3 text-base font-bold text-slate-700">
+              <i data-lucide="x-circle" class="h-5 w-5"></i>
+              ยกเลิก
+            </button>
+          </div>
+        </div>
+      </form>
+
+      <section class="min-w-0">
+        <div class="glass-shell mb-4 flex flex-col gap-3 rounded-[1.15rem] p-3 sm:flex-row sm:items-center sm:justify-between">
+          <div class="flex min-w-0 flex-wrap gap-2">
+            <button type="button" data-page="1" class="page-tab glass-control active inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-extrabold text-slate-700">
+              <i data-lucide="pin" class="h-4 w-4"></i>
+              <span>หน้า 1</span>
+              <span id="pinnedCount" class="rounded-full bg-white/35 px-2 py-0.5 text-xs">0</span>
+            </button>
+            <button type="button" data-page="2" class="page-tab glass-control inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-extrabold text-slate-700">
+              <i data-lucide="archive" class="h-4 w-4"></i>
+              <span>หน้า 2</span>
+              <span id="savedCount" class="rounded-full bg-white/35 px-2 py-0.5 text-xs">0</span>
+            </button>
+          </div>
+          <div id="pageLabel" class="text-sm font-bold text-slate-500">รายการปักหมุด</div>
+        </div>
+
+        <div id="emptyState" class="glass-shell grid min-h-[28rem] place-items-center rounded-[1.15rem] p-8 text-center">
+          <div class="mx-auto max-w-sm">
+            <div class="glass-control mx-auto mb-5 grid h-20 w-20 place-items-center rounded-full text-cyan-700">
+              <i data-lucide="notebook-pen" class="h-9 w-9"></i>
+            </div>
+            <h2 id="emptyTitle" class="text-2xl font-extrabold text-slate-900">ยังไม่มีพรอมต์</h2>
+            <p id="emptyText" class="mt-2 text-sm font-medium leading-6 text-slate-500">เพิ่มรายการแรกจากฟอร์ม แล้วการ์ดจะปรากฏตรงนี้</p>
+          </div>
+        </div>
+
+        <div id="cardsGrid" class="keeper-grid grid hidden gap-3"></div>
+      </section>
+    </section>
+  </main>
+
+  <div id="toast" class="toast glass-shell fixed bottom-5 left-1/2 z-50 flex max-w-[calc(100vw-2rem)] -translate-x-1/2 items-center gap-3 rounded-full px-4 py-3 text-sm font-bold text-slate-800 shadow-2xl">
+    <span id="toastIcon" class="grid h-8 w-8 place-items-center rounded-full bg-white/60 text-cyan-700">
+      <i data-lucide="check" class="h-4 w-4"></i>
+    </span>
+    <span id="toastText">บันทึกแล้ว</span>
+  </div>
+
+  <script>
+    const STORAGE_KEY = "prompt-keeper-glass-v1";
+
+    const els = {
+      form: document.getElementById("promptForm"),
+      titleInput: document.getElementById("titleInput"),
+      promptInput: document.getElementById("promptInput"),
+      notesInput: document.getElementById("notesInput"),
+      imageInput: document.getElementById("imageInput"),
+      imageLabel: document.getElementById("imageLabel"),
+      previewWrap: document.getElementById("previewWrap"),
+      imagePreview: document.getElementById("imagePreview"),
+      removeImageBtn: document.getElementById("removeImageBtn"),
+      clearFormBtn: document.getElementById("clearFormBtn"),
+      cancelEditBtn: document.getElementById("cancelEditBtn"),
+      saveBtnText: document.getElementById("saveBtnText"),
+      formTitle: document.getElementById("formTitle"),
+      formMode: document.getElementById("formMode"),
+      modeBadge: document.getElementById("modeBadge"),
+      promptCount: document.getElementById("promptCount"),
+      pinnedCount: document.getElementById("pinnedCount"),
+      savedCount: document.getElementById("savedCount"),
+      pageLabel: document.getElementById("pageLabel"),
+      emptyState: document.getElementById("emptyState"),
+      emptyTitle: document.getElementById("emptyTitle"),
+      emptyText: document.getElementById("emptyText"),
+      cardsGrid: document.getElementById("cardsGrid"),
+      toast: document.getElementById("toast"),
+      toastText: document.getElementById("toastText"),
+      toastIcon: document.getElementById("toastIcon")
+    };
+
+    let prompts = [];
+    let editingId = null;
+    let selectedImageData = null;
+    let currentImageData = null;
+    let toastTimer = null;
+    let activePage = 1;
+
+    function init() {
+      prompts = loadPrompts();
+      activePage = getInitialPage(prompts);
+      bindEvents();
+      renderCards();
+      refreshIcons();
+    }
+
+    function bindEvents() {
+      els.form.addEventListener("submit", handleSave);
+      els.imageInput.addEventListener("change", handleImageSelect);
+      els.removeImageBtn.addEventListener("click", clearImage);
+      els.clearFormBtn.addEventListener("click", resetForm);
+      els.cancelEditBtn.addEventListener("click", resetForm);
+      els.cardsGrid.addEventListener("click", handleCardAction);
+      document.querySelectorAll("[data-page]").forEach((button) => {
+        button.addEventListener("click", () => setActivePage(Number(button.dataset.page)));
+      });
+    }
+
+    function loadPrompts() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return [];
+        const parsed = JSON.parse(raw);
+        if (!Array.isArray(parsed)) return [];
+        return parsed.map((item) => ({
+          ...item,
+          pinned: Boolean(item.pinned)
+        }));
+      } catch (error) {
+        console.warn("Could not read saved prompts", error);
+        return [];
+      }
+    }
+
+    function getInitialPage(items) {
+      if (!items.length) return 1;
+      return items.some((item) => item.pinned) ? 1 : 2;
+    }
+
+    function persistPrompts() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(prompts));
+        return true;
+      } catch (error) {
+        console.error("Could not save prompts", error);
+        showToast("พื้นที่เก็บข้อมูลเต็ม ลองลบรูปหรือการ์ดบางรายการ", "alert-triangle");
+        return false;
+      }
+    }
+
+    async function handleSave(event) {
+      event.preventDefault();
+
+      const title = els.titleInput.value.trim() || "พรอมต์ไม่มีชื่อ";
+      const prompt = els.promptInput.value.trim();
+      const notes = els.notesInput.value.trim();
+
+      if (!prompt) {
+        els.promptInput.focus();
+        showToast("กรุณาใส่พรอมต์ก่อนบันทึก", "alert-circle");
+        return;
+      }
+
+      const now = new Date().toISOString();
+      const image = selectedImageData !== null ? selectedImageData : currentImageData;
+
+      if (editingId) {
+        const index = prompts.findIndex((item) => item.id === editingId);
+        if (index === -1) {
+          resetForm();
+          showToast("ไม่พบการ์ดที่ต้องการแก้ไข", "alert-circle");
+          return;
+        }
+
+        prompts[index] = {
+          ...prompts[index],
+          title,
+          prompt,
+          notes,
+          image,
+          updatedAt: now,
+          locked: true
+        };
+
+        if (!persistPrompts()) return;
+        activePage = prompts[index].pinned ? 1 : 2;
+        showToast("บันทึกการแก้ไขและล็อกแล้ว", "lock");
+      } else {
+        prompts.unshift({
+          id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now()),
+          title,
+          prompt,
+          notes,
+          image,
+          createdAt: now,
+          updatedAt: now,
+          locked: true,
+          pinned: false
+        });
+
+        if (!persistPrompts()) return;
+        activePage = 2;
+        showToast("บันทึกและล็อกการ์ดแล้ว", "lock");
+      }
+
+      resetForm();
+      renderCards();
+    }
+
+    async function handleImageSelect(event) {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+
+      if (!file.type.startsWith("image/")) {
+        showToast("เลือกไฟล์รูปภาพเท่านั้น", "alert-circle");
+        event.target.value = "";
+        return;
+      }
+
+      try {
+        els.imageLabel.textContent = "กำลังเตรียมรูป...";
+        selectedImageData = await resizeImage(file);
+        currentImageData = selectedImageData;
+        showPreview(selectedImageData, file.name);
+        showToast("เพิ่มรูปแล้ว", "image");
+      } catch (error) {
+        console.error("Could not process image", error);
+        showToast("อ่านรูปไม่สำเร็จ", "alert-circle");
+      }
+    }
+
+    function resizeImage(file) {
+      const maxSide = 1280;
+      const quality = 0.82;
+
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onerror = reject;
+        reader.onload = () => {
+          const img = new Image();
+          img.onerror = reject;
+          img.onload = () => {
+            const scale = Math.min(1, maxSide / Math.max(img.width, img.height));
+            const width = Math.max(1, Math.round(img.width * scale));
+            const height = Math.max(1, Math.round(img.height * scale));
+            const canvas = document.createElement("canvas");
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext("2d");
+            ctx.fillStyle = "#f8fbff";
+            ctx.fillRect(0, 0, width, height);
+            ctx.drawImage(img, 0, 0, width, height);
+            resolve(canvas.toDataURL("image/jpeg", quality));
+          };
+          img.src = reader.result;
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function showPreview(dataUrl, fileName) {
+      els.imagePreview.src = dataUrl;
+      els.previewWrap.classList.remove("hidden");
+      els.imageLabel.textContent = fileName || "เลือกรูปแล้ว";
+      refreshIcons();
+    }
+
+    function clearImage() {
+      selectedImageData = null;
+      currentImageData = null;
+      els.imageInput.value = "";
+      els.imagePreview.removeAttribute("src");
+      els.previewWrap.classList.add("hidden");
+      els.imageLabel.textContent = "เลือกรูปจากเครื่อง";
+      showToast("ลบรูปจากฟอร์มแล้ว", "image-off");
+    }
+
+    function handleCardAction(event) {
+      const button = event.target.closest("[data-action]");
+      if (!button) return;
+
+      const id = button.getAttribute("data-id");
+      const action = button.getAttribute("data-action");
+      const item = prompts.find((prompt) => prompt.id === id);
+      if (!item) return;
+
+      if (action === "copy") copyPrompt(item);
+      if (action === "edit") editPrompt(item);
+      if (action === "delete") deletePrompt(item);
+      if (action === "pin") togglePin(item);
+    }
+
+    async function copyPrompt(item) {
+      try {
+        let copied = false;
+        if (navigator.clipboard && window.isSecureContext) {
+          try {
+            await navigator.clipboard.writeText(item.prompt);
+            copied = true;
+          } catch (error) {
+            console.warn("Clipboard API failed, using fallback", error);
+          }
+        }
+        if (!copied) {
+          fallbackCopy(item.prompt);
+        }
+        showToast("คัดลอกพรอมต์แล้ว", "copy-check");
+      } catch (error) {
+        console.error("Could not copy prompt", error);
+        showToast("คัดลอกไม่สำเร็จ", "alert-circle");
+      }
+    }
+
+    function fallbackCopy(text) {
+      const textarea = document.createElement("textarea");
+      textarea.value = text;
+      textarea.setAttribute("readonly", "");
+      textarea.style.position = "fixed";
+      textarea.style.left = "-9999px";
+      document.body.appendChild(textarea);
+      textarea.select();
+      const copied = document.execCommand("copy");
+      document.body.removeChild(textarea);
+      if (!copied) throw new Error("Copy command failed");
+    }
+
+    function editPrompt(item) {
+      editingId = item.id;
+      selectedImageData = null;
+      currentImageData = item.image || null;
+      els.titleInput.value = item.title || "";
+      els.promptInput.value = item.prompt || "";
+      els.notesInput.value = item.notes || "";
+
+      if (currentImageData) {
+        showPreview(currentImageData, "ใช้รูปเดิม");
+      } else {
+        els.previewWrap.classList.add("hidden");
+        els.imagePreview.removeAttribute("src");
+        els.imageLabel.textContent = "เลือกรูปจากเครื่อง";
+      }
+
+      els.formTitle.textContent = "แก้ไขพรอมต์";
+      els.formMode.textContent = "ปลดล็อกเพื่อแก้ไข";
+      els.saveBtnText.textContent = "บันทึกและล็อกใหม่";
+      els.cancelEditBtn.classList.remove("hidden");
+      els.cancelEditBtn.classList.add("inline-flex");
+      els.modeBadge.innerHTML = '<i data-lucide="unlock" class="h-4 w-4 text-emerald-600"></i> กำลังแก้ไข';
+
+      renderCards();
+      refreshIcons();
+      els.form.scrollIntoView({ behavior: "smooth", block: "start" });
+      showToast("ปลดล็อกการ์ดเพื่อแก้ไขแล้ว", "unlock");
+    }
+
+    function deletePrompt(item) {
+      const ok = confirm(`ลบ "${item.title || "พรอมต์นี้"}" ใช่ไหม?`);
+      if (!ok) return;
+
+      prompts = prompts.filter((prompt) => prompt.id !== item.id);
+      persistPrompts();
+      if (editingId === item.id) resetForm(false);
+      renderCards();
+      showToast("ลบการ์ดแล้ว", "trash-2");
+    }
+
+    function togglePin(item) {
+      const index = prompts.findIndex((prompt) => prompt.id === item.id);
+      if (index === -1) return;
+
+      prompts[index] = {
+        ...prompts[index],
+        pinned: !prompts[index].pinned,
+        updatedAt: new Date().toISOString()
+      };
+
+      if (!persistPrompts()) return;
+      activePage = prompts[index].pinned ? 1 : 2;
+      renderCards();
+      showToast(prompts[index].pinned ? "ปักหมุดไปหน้า 1 แล้ว" : "ย้ายกลับไปหน้า 2 แล้ว", prompts[index].pinned ? "pin" : "pin-off");
+    }
+
+    function resetForm(showMessage = true) {
+      editingId = null;
+      selectedImageData = null;
+      currentImageData = null;
+      els.form.reset();
+      els.imageInput.value = "";
+      els.imagePreview.removeAttribute("src");
+      els.previewWrap.classList.add("hidden");
+      els.imageLabel.textContent = "เลือกรูปจากเครื่อง";
+      els.formTitle.textContent = "เพิ่มพรอมต์";
+      els.formMode.textContent = "การ์ดจะล็อกหลังบันทึก";
+      els.saveBtnText.textContent = "บันทึกและล็อก";
+      els.cancelEditBtn.classList.add("hidden");
+      els.cancelEditBtn.classList.remove("inline-flex");
+      els.modeBadge.innerHTML = '<i data-lucide="shield-check" class="h-4 w-4 text-cyan-600"></i> พร้อมบันทึก';
+      renderCards();
+      refreshIcons();
+      if (showMessage) showToast("ล้างฟอร์มแล้ว", "rotate-ccw");
+    }
+
+    function setActivePage(page) {
+      activePage = page === 1 ? 1 : 2;
+      renderCards();
+    }
+
+    function isPinned(item) {
+      return Boolean(item.pinned);
+    }
+
+    function renderCards() {
+      els.promptCount.textContent = prompts.length;
+      const pinnedItems = prompts.filter(isPinned);
+      const savedItems = prompts.filter((item) => !isPinned(item));
+      const visibleItems = activePage === 1 ? pinnedItems : savedItems;
+      const hasVisibleItems = visibleItems.length > 0;
+
+      els.pinnedCount.textContent = pinnedItems.length;
+      els.savedCount.textContent = savedItems.length;
+      els.pageLabel.textContent = activePage === 1 ? "รายการปักหมุด" : "รายการบันทึก";
+      document.querySelectorAll("[data-page]").forEach((button) => {
+        button.classList.toggle("active", Number(button.dataset.page) === activePage);
+      });
+
+      els.emptyTitle.textContent = activePage === 1 ? "ยังไม่มีรายการปักหมุด" : "ยังไม่มีพรอมต์ในหน้า 2";
+      els.emptyText.textContent = activePage === 1
+        ? "กดปักหมุดที่การ์ดในหน้า 2 แล้วรายการจะมาอยู่ตรงนี้"
+        : "บันทึกพรอมต์ใหม่ แล้วการ์ดจะย้ายมาอยู่หน้านี้";
+      els.emptyState.classList.toggle("hidden", hasVisibleItems);
+      els.cardsGrid.classList.toggle("hidden", !hasVisibleItems);
+
+      if (!hasVisibleItems) {
+        els.cardsGrid.innerHTML = "";
+        refreshIcons();
+        return;
+      }
+
+      els.cardsGrid.innerHTML = visibleItems.map((item) => {
+        const isEditing = item.id === editingId;
+        const pinned = isPinned(item);
+        const date = formatDate(item.updatedAt || item.createdAt);
+        const notes = item.notes ? `<p class="mt-2 max-h-14 overflow-auto whitespace-pre-wrap text-xs leading-5 text-slate-600 soft-scroll">${escapeHtml(item.notes)}</p>` : "";
+        const image = item.image
+          ? `<div class="image-frame mb-3 flex h-44 items-center justify-center"><img class="h-full w-full object-contain" src="${item.image}" alt="${escapeHtml(item.title || "Prompt image")}" loading="lazy"></div>`
+          : `<div class="image-frame mb-3 grid h-32 place-items-center text-slate-400"><i data-lucide="image" class="h-8 w-8"></i></div>`;
+        const badge = isEditing
+          ? '<span class="glass-control inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-bold text-emerald-700"><i data-lucide="unlock" class="h-3.5 w-3.5"></i>แก้ไข</span>'
+          : '<span class="glass-control inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-bold text-slate-600"><i data-lucide="lock" class="h-3.5 w-3.5 text-emerald-600"></i>ล็อก</span>';
+        const pinButton = pinned
+          ? `<button type="button" data-action="pin" data-id="${item.id}" class="glass-control inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-bold text-cyan-700" title="ถอนหมุด"><i data-lucide="pin-off" class="h-3.5 w-3.5"></i>ถอน</button>`
+          : `<button type="button" data-action="pin" data-id="${item.id}" class="glass-control inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-bold text-slate-600" title="ปักหมุด"><i data-lucide="pin" class="h-3.5 w-3.5"></i>ปักหมุด</button>`;
+
+        return `
+          <article class="prompt-card ${isEditing ? "editing" : ""} overflow-hidden p-3">
+            ${image}
+            <div class="flex items-start justify-between gap-2">
+              <div class="min-w-0">
+                <h3 class="break-words text-base font-extrabold leading-6 text-slate-900">${escapeHtml(item.title || "พรอมต์ไม่มีชื่อ")}</h3>
+                <p class="mt-1 text-[11px] font-bold uppercase tracking-[0.10em] text-slate-400">${date}</p>
+              </div>
+              <div class="flex flex-none flex-col items-end gap-1.5">
+                ${badge}
+                ${pinButton}
+              </div>
+            </div>
+            <p class="mt-3 max-h-32 overflow-auto whitespace-pre-wrap break-words rounded-[8px] border border-white/60 bg-white/32 p-2.5 text-xs leading-6 text-slate-800 soft-scroll">${escapeHtml(item.prompt || "")}</p>
+            ${notes}
+            <div class="mt-3 grid grid-cols-3 gap-2">
+              <button type="button" data-action="copy" data-id="${item.id}" class="glass-control inline-flex min-h-[2.45rem] items-center justify-center gap-1.5 rounded-full px-2 text-xs font-bold text-slate-700" title="คัดลอก">
+                <i data-lucide="copy" class="h-4 w-4"></i><span>คัดลอก</span>
+              </button>
+              <button type="button" data-action="edit" data-id="${item.id}" class="glass-control inline-flex min-h-[2.45rem] items-center justify-center gap-1.5 rounded-full px-2 text-xs font-bold text-slate-700" title="แก้ไข">
+                <i data-lucide="pencil" class="h-4 w-4"></i><span>แก้ไข</span>
+              </button>
+              <button type="button" data-action="delete" data-id="${item.id}" class="danger-glass glass-control inline-flex min-h-[2.45rem] items-center justify-center gap-1.5 rounded-full px-2 text-xs font-bold" title="ลบ">
+                <i data-lucide="trash-2" class="h-4 w-4"></i><span>ลบ</span>
+              </button>
+            </div>
+          </article>
+        `;
+      }).join("");
+
+      refreshIcons();
+    }
+
+    function formatDate(value) {
+      if (!value) return "";
+      return new Intl.DateTimeFormat("th-TH", {
+        dateStyle: "medium",
+        timeStyle: "short"
+      }).format(new Date(value));
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function showToast(message, iconName = "check") {
+      clearTimeout(toastTimer);
+      els.toastText.textContent = message;
+      els.toastIcon.innerHTML = `<i data-lucide="${iconName}" class="h-4 w-4"></i>`;
+      els.toast.classList.add("show");
+      refreshIcons();
+      toastTimer = setTimeout(() => {
+        els.toast.classList.remove("show");
+      }, 2400);
+    }
+
+    function refreshIcons() {
+      if (window.lucide) {
+        window.lucide.createIcons();
+      }
+    }
+
+    init();
+  </script>
+</body>
+</html>
