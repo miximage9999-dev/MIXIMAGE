@@ -3,8 +3,22 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Prompt Keeper</title>
-  <link rel="icon" href="data:," />
+  <title>Prompt Keeper - คลังพรอมต์ส่วนตัว</title>
+  <link rel="icon" href="logo.png" type="image/png" />
+
+  <!-- SEO / Open Graph Meta Tags -->
+  <meta name="description" content="เครื่องมือสำหรับจัดเก็บและจัดการพรอมต์ AI ส่วนตัว ใช้งานง่าย รวดเร็ว และเข้าถึงได้จากทุกอุปกรณ์ด้วยระบบ Supabase" />
+  <meta property="og:title" content="Prompt Keeper - คลังพรอมต์ส่วนตัว" />
+  <meta property="og:description" content="เครื่องมือสำหรับจัดเก็บและจัดการพรอมต์ AI ส่วนตัว ใช้งานง่าย รวดเร็ว และเข้าถึงได้จากทุกอุปกรณ์ด้วยระบบ Supabase" />
+  <meta property="og:image" content="https://miximage9999-dev.github.io/MIXIMAGE/logo.png" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://miximage9999-dev.github.io/MIXIMAGE/" />
+
+  <!-- Twitter Meta Tags -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Prompt Keeper - คลังพรอมต์ส่วนตัว" />
+  <meta name="twitter:description" content="เครื่องมือสำหรับจัดเก็บและจัดการพรอมต์ AI ส่วนตัว ใช้งานง่าย รวดเร็ว และเข้าถึงได้จากทุกอุปกรณ์ด้วยระบบ Supabase" />
+  <meta name="twitter:image" content="https://miximage9999-dev.github.io/MIXIMAGE/logo.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Thai:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -22,6 +36,7 @@
   </script>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     :root {
       color-scheme: light;
@@ -219,9 +234,117 @@
         padding-right: 1rem;
       }
     }
+
+    /* PIN Lock Screen Styles */
+    #pinOverlay {
+      background: radial-gradient(circle at center, rgba(15, 23, 42, 0.96) 0%, rgba(2, 6, 23, 0.99) 100%);
+    }
+    .pin-dot.filled {
+      background-color: #10b8b1;
+      border-color: #10b8b1;
+      box-shadow: 0 0 12px rgba(16, 184, 177, 0.7);
+      transform: scale(1.2);
+    }
+    .pin-key {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: rgba(255, 255, 255, 0.9);
+      transition: all 120ms ease;
+      cursor: pointer;
+    }
+    .pin-key:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.24);
+      transform: scale(1.05);
+    }
+    .pin-key:active {
+      background: rgba(255, 255, 255, 0.2);
+      transform: scale(0.95);
+    }
   </style>
 </head>
 <body>
+  <!-- PIN Lock Screen Overlay -->
+  <div id="pinOverlay" class="fixed inset-0 z-[100] flex items-center justify-center transition-all duration-500">
+    <div class="glass-shell max-w-sm w-full mx-4 p-8 rounded-[1.5rem] text-center flex flex-col items-center gap-6 shadow-2xl" style="background: rgba(15, 23, 42, 0.4); border-color: rgba(255, 255, 255, 0.1);">
+      <div class="glass-control grid h-16 w-16 place-items-center rounded-full text-cyan-500 mb-2" style="background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.12);">
+        <i data-lucide="lock" class="h-8 w-8"></i>
+      </div>
+      <div>
+        <h2 class="text-2xl font-extrabold text-white">Prompt Keeper</h2>
+        <p class="mt-1 text-sm text-slate-400">กรุณาใส่รหัส PIN เพื่อเข้าใช้งาน</p>
+      </div>
+      
+      <!-- PIN dots -->
+      <div class="flex gap-4 my-2">
+        <span class="pin-dot w-4 h-4 rounded-full border-2 border-white/40 transition-all duration-150"></span>
+        <span class="pin-dot w-4 h-4 rounded-full border-2 border-white/40 transition-all duration-150"></span>
+        <span class="pin-dot w-4 h-4 rounded-full border-2 border-white/40 transition-all duration-150"></span>
+        <span class="pin-dot w-4 h-4 rounded-full border-2 border-white/40 transition-all duration-150"></span>
+      </div>
+      
+      <!-- Error message -->
+      <div id="pinError" class="h-5 text-sm text-rose-500 font-bold opacity-0 transition-opacity duration-150">รหัส PIN ไม่ถูกต้อง</div>
+      
+      <!-- PIN Keypad -->
+      <div class="grid grid-cols-3 gap-3 w-full max-w-[260px] mt-2">
+        <button type="button" class="pin-key h-14 w-14 rounded-full flex items-center justify-center mx-auto text-xl font-bold" data-val="1">1</button>
+        <button type="button" class="pin-key h-14 w-14 rounded-full flex items-center justify-center mx-auto text-xl font-bold" data-val="2">2</button>
+        <button type="button" class="pin-key h-14 w-14 rounded-full flex items-center justify-center mx-auto text-xl font-bold" data-val="3">3</button>
+        <button type="button" class="pin-key h-14 w-14 rounded-full flex items-center justify-center mx-auto text-xl font-bold" data-val="4">4</button>
+        <button type="button" class="pin-key h-14 w-14 rounded-full flex items-center justify-center mx-auto text-xl font-bold" data-val="5">5</button>
+        <button type="button" class="pin-key h-14 w-14 rounded-full flex items-center justify-center mx-auto text-xl font-bold" data-val="6">6</button>
+        <button type="button" class="pin-key h-14 w-14 rounded-full flex items-center justify-center mx-auto text-xl font-bold" data-val="7">7</button>
+        <button type="button" class="pin-key h-14 w-14 rounded-full flex items-center justify-center mx-auto text-xl font-bold" data-val="8">8</button>
+        <button type="button" class="pin-key h-14 w-14 rounded-full flex items-center justify-center mx-auto text-xl font-bold" data-val="9">9</button>
+        <button type="button" class="pin-key h-14 w-14 rounded-full flex items-center justify-center mx-auto text-lg font-bold opacity-70 hover:opacity-100" data-val="clear"><i data-lucide="delete" class="h-5 w-5"></i></button>
+        <button type="button" class="pin-key h-14 w-14 rounded-full flex items-center justify-center mx-auto text-xl font-bold" data-val="0">0</button>
+        <button type="button" class="pin-key h-14 w-14 rounded-full flex items-center justify-center mx-auto text-lg font-bold opacity-70 hover:opacity-100" data-val="delete"><i data-lucide="chevron-left" class="h-5 w-5"></i></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Supabase Settings Modal -->
+  <div id="settingsModal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-md hidden transition-all duration-300">
+    <div class="glass-shell max-w-md w-full mx-4 p-6 rounded-[1.25rem] shadow-2xl relative">
+      <button id="closeSettingsBtn" type="button" class="glass-control absolute right-4 top-4 inline-flex h-9 w-9 items-center justify-center rounded-full text-slate-600">
+        <i data-lucide="x" class="h-4 w-4"></i>
+      </button>
+      <div class="flex items-center gap-3 mb-5">
+        <div class="glass-control grid h-10 w-10 place-items-center rounded-full text-cyan-600">
+          <i data-lucide="settings" class="h-5 w-5"></i>
+        </div>
+        <div>
+          <h2 class="text-xl font-bold text-slate-900">ตั้งค่าการเชื่อมต่อ Supabase</h2>
+          <p class="text-xs font-medium text-slate-500">บันทึกอยู่ในเบราว์เซอร์ของเครื่องนี้</p>
+        </div>
+      </div>
+      <form id="settingsForm" class="space-y-4">
+        <label class="block">
+          <span class="mb-2 block text-xs font-bold text-slate-700">SUPABASE URL</span>
+          <input id="supabaseUrlInput" class="field rounded-full px-4 py-2.5 text-sm text-slate-900 placeholder:text-slate-400" type="url" required placeholder="https://your-project.supabase.co" />
+        </label>
+        <label class="block">
+          <span class="mb-2 block text-xs font-bold text-slate-700">SUPABASE ANON KEY</span>
+          <input id="supabaseKeyInput" class="field rounded-full px-4 py-2.5 text-sm text-slate-900 placeholder:text-slate-400" type="password" required placeholder="your-anon-key" />
+        </label>
+        <div class="flex gap-3 pt-2">
+          <button type="submit" class="primary-glass glass-control inline-flex min-h-[2.85rem] flex-1 items-center justify-center gap-2 rounded-full px-4 text-sm font-extrabold">
+            <i data-lucide="check" class="h-4 w-4"></i>
+            เชื่อมต่อ
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Loading Overlay -->
+  <div id="loadingOverlay" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/10 backdrop-blur-[2px] hidden">
+    <div class="glass-shell p-6 rounded-full flex items-center justify-center shadow-lg bg-white/70">
+      <div class="animate-spin rounded-full h-8 w-8 border-4 border-cyan-600 border-t-transparent"></div>
+    </div>
+  </div>
+
   <main class="relative z-10 mx-auto flex min-h-screen w-full max-w-7xl flex-col gap-6 px-5 py-6 sm:px-8 lg:px-10">
     <header class="glass-shell flex flex-col gap-4 rounded-[1.15rem] px-5 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-6">
       <div class="min-w-0">
@@ -239,6 +362,9 @@
         <button id="clearFormBtn" type="button" class="glass-control inline-flex items-center gap-2 rounded-full px-4 py-3 text-sm font-semibold text-slate-700">
           <i data-lucide="rotate-ccw" class="h-4 w-4"></i>
           ล้างฟอร์ม
+        </button>
+        <button id="openSettingsBtn" type="button" class="glass-control inline-flex h-12 w-12 items-center justify-center rounded-full text-slate-700" title="ตั้งค่า Supabase">
+          <i data-lucide="settings" class="h-5 w-5"></i>
         </button>
       </div>
     </header>
@@ -377,7 +503,18 @@
       cardsGrid: document.getElementById("cardsGrid"),
       toast: document.getElementById("toast"),
       toastText: document.getElementById("toastText"),
-      toastIcon: document.getElementById("toastIcon")
+      toastIcon: document.getElementById("toastIcon"),
+      
+      // New Elements
+      pinOverlay: document.getElementById("pinOverlay"),
+      pinError: document.getElementById("pinError"),
+      settingsModal: document.getElementById("settingsModal"),
+      openSettingsBtn: document.getElementById("openSettingsBtn"),
+      closeSettingsBtn: document.getElementById("closeSettingsBtn"),
+      settingsForm: document.getElementById("settingsForm"),
+      supabaseUrlInput: document.getElementById("supabaseUrlInput"),
+      supabaseKeyInput: document.getElementById("supabaseKeyInput"),
+      loadingOverlay: document.getElementById("loadingOverlay")
     };
 
     let prompts = [];
@@ -386,9 +523,21 @@
     let currentImageData = null;
     let toastTimer = null;
     let activePage = 1;
+    let supabase = null;
 
-    function init() {
-      prompts = loadPrompts();
+    async function init() {
+      initPIN();
+      initSupabase();
+      
+      // Only fetch prompts if PIN is already unlocked and Supabase is configured
+      if (sessionStorage.getItem("prompt_keeper_unlocked") === "true") {
+        if (supabase) {
+          prompts = await loadPrompts();
+        } else {
+          showSettingsModal();
+        }
+      }
+      
       activePage = getInitialPage(prompts);
       bindEvents();
       renderCards();
@@ -402,23 +551,165 @@
       els.clearFormBtn.addEventListener("click", resetForm);
       els.cancelEditBtn.addEventListener("click", resetForm);
       els.cardsGrid.addEventListener("click", handleCardAction);
+      els.openSettingsBtn.addEventListener("click", showSettingsModal);
+      els.closeSettingsBtn.addEventListener("click", hideSettingsModal);
+      els.settingsForm.addEventListener("submit", handleSettingsSubmit);
+      
       document.querySelectorAll("[data-page]").forEach((button) => {
         button.addEventListener("click", () => setActivePage(Number(button.dataset.page)));
       });
     }
 
-    function loadPrompts() {
+    function initPIN() {
+      const dots = document.querySelectorAll(".pin-dot");
+      const keys = document.querySelectorAll(".pin-key");
+      
+      let enteredPin = "";
+      
+      if (sessionStorage.getItem("prompt_keeper_unlocked") === "true") {
+        els.pinOverlay.style.display = "none";
+        return;
+      }
+      
+      function updateDots() {
+        dots.forEach((dot, index) => {
+          if (index < enteredPin.length) {
+            dot.classList.add("filled");
+          } else {
+            dot.classList.remove("filled");
+          }
+        });
+      }
+      
+      async function handleKeyPress(val) {
+        els.pinError.classList.add("opacity-0");
+        
+        if (val === "clear") {
+          enteredPin = "";
+        } else if (val === "delete") {
+          enteredPin = enteredPin.slice(0, -1);
+        } else if (enteredPin.length < 4) {
+          enteredPin += val;
+        }
+        
+        updateDots();
+        
+        if (enteredPin.length === 4) {
+          if (enteredPin === "1449") {
+            sessionStorage.setItem("prompt_keeper_unlocked", "true");
+            
+            // Fade out overlay
+            els.pinOverlay.style.opacity = "0";
+            els.pinOverlay.style.pointerEvents = "none";
+            setTimeout(() => {
+              els.pinOverlay.style.display = "none";
+            }, 500);
+            
+            // Post-unlock setup
+            if (initSupabase()) {
+              prompts = await loadPrompts();
+              activePage = getInitialPage(prompts);
+              renderCards();
+            } else {
+              showSettingsModal();
+            }
+          } else {
+            els.pinError.classList.remove("opacity-0");
+            enteredPin = "";
+            setTimeout(() => {
+              updateDots();
+            }, 300);
+          }
+        }
+      }
+      
+      keys.forEach(key => {
+        key.addEventListener("click", () => {
+          handleKeyPress(key.getAttribute("data-val"));
+        });
+      });
+      
+      document.addEventListener("keydown", (e) => {
+        if (els.pinOverlay.style.display === "none") return;
+        
+        if (e.key >= "0" && e.key <= "9") {
+          handleKeyPress(e.key);
+        } else if (e.key === "Backspace") {
+          handleKeyPress("delete");
+        } else if (e.key === "Escape") {
+          handleKeyPress("clear");
+        }
+      });
+    }
+
+    function initSupabase() {
+      const url = localStorage.getItem("supabase_url");
+      const key = localStorage.getItem("supabase_anon_key");
+      if (url && key) {
+        try {
+          supabase = window.supabase.createClient(url, key);
+          return true;
+        } catch (error) {
+          console.error("Failed to initialize Supabase client", error);
+          showToast("ตั้งค่า URL หรือ Key ของ Supabase ไม่ถูกต้อง", "alert-triangle");
+          return false;
+        }
+      }
+      return false;
+    }
+
+    function showSettingsModal() {
+      els.supabaseUrlInput.value = localStorage.getItem("supabase_url") || "";
+      els.supabaseKeyInput.value = localStorage.getItem("supabase_anon_key") || "";
+      els.settingsModal.classList.remove("hidden");
+    }
+
+    function hideSettingsModal() {
+      els.settingsModal.classList.add("hidden");
+    }
+
+    function showLoading(show) {
+      if (show) {
+        els.loadingOverlay.classList.remove("hidden");
+      } else {
+        els.loadingOverlay.classList.add("hidden");
+      }
+    }
+
+    async function handleSettingsSubmit(e) {
+      e.preventDefault();
+      const url = els.supabaseUrlInput.value.trim();
+      const key = els.supabaseKeyInput.value.trim();
+      
+      localStorage.setItem("supabase_url", url);
+      localStorage.setItem("supabase_anon_key", key);
+      
+      hideSettingsModal();
+      showToast("บันทึกการตั้งค่าแล้ว กำลังเชื่อมต่อ...", "settings");
+      
+      if (initSupabase()) {
+        prompts = await loadPrompts();
+        activePage = getInitialPage(prompts);
+        renderCards();
+      }
+    }
+
+    async function loadPrompts() {
+      if (!supabase) return [];
+      showLoading(true);
       try {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if (!raw) return [];
-        const parsed = JSON.parse(raw);
-        if (!Array.isArray(parsed)) return [];
-        return parsed.map((item) => ({
-          ...item,
-          pinned: Boolean(item.pinned)
-        }));
+        const { data, error } = await supabase
+          .from("prompts")
+          .select("*")
+          .order("created_at", { ascending: false });
+          
+        showLoading(false);
+        if (error) throw error;
+        return data || [];
       } catch (error) {
-        console.warn("Could not read saved prompts", error);
+        console.error("Error loading prompts:", error);
+        showToast("ดึงข้อมูลจาก Supabase ล้มเหลว", "alert-circle");
+        showLoading(false);
         return [];
       }
     }
@@ -428,19 +719,67 @@
       return items.some((item) => item.pinned) ? 1 : 2;
     }
 
-    function persistPrompts() {
+    // Convert Base64 dataURL to Blob for Supabase storage upload
+    function dataURLtoBlob(dataurl) {
+      const arr = dataurl.split(',');
+      const mime = arr[0].match(/:(.*?);/)[1];
+      const bstr = atob(arr[1]);
+      let n = bstr.length;
+      const u8arr = new Uint8Array(n);
+      while (n--) {
+        u8arr[n] = bstr.charCodeAt(n);
+      }
+      return new Blob([u8arr], { type: mime });
+    }
+
+    async function uploadImageToSupabase(dataUrl) {
+      if (!supabase) return null;
       try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(prompts));
-        return true;
+        const blob = dataURLtoBlob(dataUrl);
+        const ext = blob.type.split('/')[1] || 'jpg';
+        const path = `${Date.now()}_${Math.random().toString(36).substring(2, 9)}.${ext}`;
+        
+        const { data, error } = await supabase.storage
+          .from("prompt-images")
+          .upload(path, blob, {
+            contentType: blob.type
+          });
+          
+        if (error) throw error;
+        
+        const { data: { publicUrl } } = supabase.storage
+          .from("prompt-images")
+          .getPublicUrl(path);
+          
+        return publicUrl;
       } catch (error) {
-        console.error("Could not save prompts", error);
-        showToast("พื้นที่เก็บข้อมูลเต็ม ลองลบรูปหรือการ์ดบางรายการ", "alert-triangle");
-        return false;
+        console.error("Image upload failed:", error);
+        showToast("อัปโหลดรูปภาพไม่สำเร็จ", "alert-circle");
+        return null;
+      }
+    }
+
+    async function deleteImageFromSupabase(url) {
+      if (!supabase || !url) return;
+      try {
+        const parts = url.split('/prompt-images/');
+        if (parts.length > 1) {
+          const path = parts[1];
+          await supabase.storage.from("prompt-images").remove([path]);
+        }
+      } catch (error) {
+        console.warn("Could not delete image from Supabase Storage:", error);
       }
     }
 
     async function handleSave(event) {
       event.preventDefault();
+
+      if (!supabase) {
+        showToast("กรุณาเชื่อมต่อกับ Supabase ก่อน", "alert-circle");
+        showSettingsModal();
+        return;
+      }
 
       const title = els.titleInput.value.trim() || "พรอมต์ไม่มีชื่อ";
       const prompt = els.promptInput.value.trim();
@@ -452,48 +791,96 @@
         return;
       }
 
-      const now = new Date().toISOString();
-      const image = selectedImageData !== null ? selectedImageData : currentImageData;
+      showLoading(true);
+      let imageUrl = currentImageData;
 
-      if (editingId) {
-        const index = prompts.findIndex((item) => item.id === editingId);
-        if (index === -1) {
-          resetForm();
-          showToast("ไม่พบการ์ดที่ต้องการแก้ไข", "alert-circle");
-          return;
+      if (selectedImageData) {
+        imageUrl = await uploadImageToSupabase(selectedImageData);
+        if (!imageUrl) {
+          showLoading(false);
+          return; // Stop if image upload failed
         }
-
-        prompts[index] = {
-          ...prompts[index],
-          title,
-          prompt,
-          notes,
-          image,
-          updatedAt: now,
-          locked: true
-        };
-
-        if (!persistPrompts()) return;
-        activePage = prompts[index].pinned ? 1 : 2;
-        showToast("บันทึกการแก้ไขและล็อกแล้ว", "lock");
-      } else {
-        prompts.unshift({
-          id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now()),
-          title,
-          prompt,
-          notes,
-          image,
-          createdAt: now,
-          updatedAt: now,
-          locked: true,
-          pinned: false
-        });
-
-        if (!persistPrompts()) return;
-        activePage = 2;
-        showToast("บันทึกและล็อกการ์ดแล้ว", "lock");
+        
+        // Delete old image if updating
+        if (editingId) {
+          const oldItem = prompts.find((item) => item.id === editingId);
+          if (oldItem && oldItem.image_url) {
+            await deleteImageFromSupabase(oldItem.image_url);
+          }
+        }
+      } else if (currentImageData === null && editingId) {
+        // Image was removed by user
+        const oldItem = prompts.find((item) => item.id === editingId);
+        if (oldItem && oldItem.image_url) {
+          await deleteImageFromSupabase(oldItem.image_url);
+        }
       }
 
+      const now = new Date().toISOString();
+
+      if (editingId) {
+        try {
+          const { error } = await supabase
+            .from("prompts")
+            .update({
+              title,
+              prompt,
+              notes,
+              image_url: imageUrl,
+              updated_at: now
+            })
+            .eq("id", editingId);
+
+          if (error) throw error;
+
+          const index = prompts.findIndex((item) => item.id === editingId);
+          if (index !== -1) {
+            prompts[index] = {
+              ...prompts[index],
+              title,
+              prompt,
+              notes,
+              image_url: imageUrl,
+              updated_at: now
+            };
+          }
+          activePage = prompts[index].pinned ? 1 : 2;
+          showToast("บันทึกการแก้ไขและล็อกแล้ว", "lock");
+        } catch (error) {
+          console.error("Error updating prompt:", error);
+          showToast("บันทึกข้อมูลล้มเหลว", "alert-circle");
+        }
+      } else {
+        try {
+          const newItem = {
+            title,
+            prompt,
+            notes,
+            image_url: imageUrl,
+            pinned: false,
+            created_at: now,
+            updated_at: now
+          };
+
+          const { data, error } = await supabase
+            .from("prompts")
+            .insert([newItem])
+            .select();
+
+          if (error) throw error;
+          
+          if (data && data[0]) {
+            prompts.unshift(data[0]);
+          }
+          activePage = 2;
+          showToast("บันทึกและล็อกการ์ดแล้ว", "lock");
+        } catch (error) {
+          console.error("Error inserting prompt:", error);
+          showToast("บันทึกข้อมูลล้มเหลว", "alert-circle");
+        }
+      }
+
+      showLoading(false);
       resetForm();
       renderCards();
     }
@@ -618,7 +1005,7 @@
     function editPrompt(item) {
       editingId = item.id;
       selectedImageData = null;
-      currentImageData = item.image || null;
+      currentImageData = item.image_url || item.image || null;
       els.titleInput.value = item.title || "";
       els.promptInput.value = item.prompt || "";
       els.notesInput.value = item.notes || "";
@@ -644,31 +1031,72 @@
       showToast("ปลดล็อกการ์ดเพื่อแก้ไขแล้ว", "unlock");
     }
 
-    function deletePrompt(item) {
+    async function deletePrompt(item) {
       const ok = confirm(`ลบ "${item.title || "พรอมต์นี้"}" ใช่ไหม?`);
       if (!ok) return;
 
-      prompts = prompts.filter((prompt) => prompt.id !== item.id);
-      persistPrompts();
-      if (editingId === item.id) resetForm(false);
-      renderCards();
-      showToast("ลบการ์ดแล้ว", "trash-2");
+      if (!supabase) {
+        showToast("กรุณาเชื่อมต่อกับ Supabase", "alert-circle");
+        return;
+      }
+
+      showLoading(true);
+      try {
+        if (item.image_url) {
+          await deleteImageFromSupabase(item.image_url);
+        }
+
+        const { error } = await supabase
+          .from("prompts")
+          .delete()
+          .eq("id", item.id);
+
+        if (error) throw error;
+
+        prompts = prompts.filter((prompt) => prompt.id !== item.id);
+        if (editingId === item.id) resetForm(false);
+        renderCards();
+        showToast("ลบการ์ดแล้ว", "trash-2");
+      } catch (error) {
+        console.error("Error deleting prompt:", error);
+        showToast("ลบข้อมูลไม่สำเร็จ", "alert-circle");
+      }
+      showLoading(false);
     }
 
-    function togglePin(item) {
-      const index = prompts.findIndex((prompt) => prompt.id === item.id);
-      if (index === -1) return;
+    async function togglePin(item) {
+      if (!supabase) {
+        showToast("กรุณาเชื่อมต่อกับ Supabase", "alert-circle");
+        return;
+      }
 
-      prompts[index] = {
-        ...prompts[index],
-        pinned: !prompts[index].pinned,
-        updatedAt: new Date().toISOString()
-      };
+      const newPinned = !item.pinned;
+      showLoading(true);
+      try {
+        const { error } = await supabase
+          .from("prompts")
+          .update({ pinned: newPinned, updated_at: new Date().toISOString() })
+          .eq("id", item.id);
 
-      if (!persistPrompts()) return;
-      activePage = prompts[index].pinned ? 1 : 2;
-      renderCards();
-      showToast(prompts[index].pinned ? "ปักหมุดไปหน้า 1 แล้ว" : "ย้ายกลับไปหน้า 2 แล้ว", prompts[index].pinned ? "pin" : "pin-off");
+        if (error) throw error;
+
+        const index = prompts.findIndex((prompt) => prompt.id === item.id);
+        if (index !== -1) {
+          prompts[index] = {
+            ...prompts[index],
+            pinned: newPinned,
+            updated_at: new Date().toISOString()
+          };
+        }
+
+        activePage = newPinned ? 1 : 2;
+        renderCards();
+        showToast(newPinned ? "ปักหมุดไปหน้า 1 แล้ว" : "ย้ายกลับไปหน้า 2 แล้ว", newPinned ? "pin" : "pin-off");
+      } catch (error) {
+        console.error("Error pinning prompt:", error);
+        showToast("เปลี่ยนสถานะปักหมุดไม่สำเร็จ", "alert-circle");
+      }
+      showLoading(false);
     }
 
     function resetForm(showMessage = true) {
@@ -730,11 +1158,14 @@
       els.cardsGrid.innerHTML = visibleItems.map((item) => {
         const isEditing = item.id === editingId;
         const pinned = isPinned(item);
-        const date = formatDate(item.updatedAt || item.createdAt);
+        const date = formatDate(item.updated_at || item.created_at || item.updatedAt || item.createdAt);
         const notes = item.notes ? `<p class="mt-2 max-h-14 overflow-auto whitespace-pre-wrap text-xs leading-5 text-slate-600 soft-scroll">${escapeHtml(item.notes)}</p>` : "";
-        const image = item.image
-          ? `<div class="image-frame mb-3 flex h-44 items-center justify-center"><img class="h-full w-full object-contain" src="${item.image}" alt="${escapeHtml(item.title || "Prompt image")}" loading="lazy"></div>`
+        
+        const cardImage = item.image_url || item.image;
+        const image = cardImage
+          ? `<div class="image-frame mb-3 flex h-44 items-center justify-center"><img class="h-full w-full object-contain" src="${cardImage}" alt="${escapeHtml(item.title || "Prompt image")}" loading="lazy"></div>`
           : `<div class="image-frame mb-3 grid h-32 place-items-center text-slate-400"><i data-lucide="image" class="h-8 w-8"></i></div>`;
+          
         const badge = isEditing
           ? '<span class="glass-control inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-bold text-emerald-700"><i data-lucide="unlock" class="h-3.5 w-3.5"></i>แก้ไข</span>'
           : '<span class="glass-control inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-bold text-slate-600"><i data-lucide="lock" class="h-3.5 w-3.5 text-emerald-600"></i>ล็อก</span>';
