@@ -278,8 +278,8 @@
   <!-- PIN Lock Screen Overlay -->
   <div id="pinOverlay" class="fixed inset-0 z-[100] flex items-center justify-center transition-all duration-500">
     <div class="glass-shell max-w-sm w-full mx-4 p-8 rounded-[1.5rem] text-center flex flex-col items-center gap-6 shadow-2xl" style="background: rgba(15, 23, 42, 0.4); border-color: rgba(255, 255, 255, 0.1);">
-      <div class="glass-control grid h-16 w-16 place-items-center rounded-full text-cyan-500 mb-2" style="background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.12);">
-        <i data-lucide="lock" class="h-8 w-8"></i>
+            <div class="mb-2">
+        <img src="logo.png" alt="Logo" class="h-20 w-20 object-contain mx-auto rounded-[1.25rem] shadow-lg border border-white/20" />
       </div>
       <div>
         <h2 class="text-2xl font-extrabold text-white">คลังข้อมูลของ MIX NATTANON</h2>
@@ -638,7 +638,7 @@
     let currentImageData = null;
     let toastTimer = null;
     let activePage = "pinned";
-    let supabase = null;
+    let supabaseClient = null;
 
     async function init() {
       initPIN();
@@ -646,7 +646,7 @@
       
       // Only fetch prompts if PIN is already unlocked and Supabase is configured
       if (sessionStorage.getItem("prompt_keeper_unlocked") === "true") {
-        if (supabase) {
+        if (supabaseClient) {
           prompts = await loadPrompts();
           notes = await loadNotes();
           extractCustomPages();
@@ -856,7 +856,7 @@
       const key = localStorage.getItem("supabase_anon_key");
       if (url && key) {
         try {
-          supabase = window.supabase.createClient(url, key);
+          supabaseClient = window.supabase.createClient(url, key);
           return true;
         } catch (error) {
           console.error("Failed to initialize Supabase client", error);
@@ -908,10 +908,10 @@
     }
 
     async function loadPrompts() {
-      if (!supabase) return [];
+      if (!supabaseClient) return [];
       showLoading(true);
       try {
-        const { data, error } = await supabase
+        const { data, error } = await supabaseClient
           .from("prompts")
           .select("*")
           .order("created_at", { ascending: false });
@@ -928,10 +928,10 @@
     }
 
     async function loadNotes() {
-      if (!supabase) return [];
+      if (!supabaseClient) return [];
       showLoading(true);
       try {
-        const { data, error } = await supabase
+        const { data, error } = await supabaseClient
           .from("notes")
           .select("*")
           .order("created_at", { ascending: false });
@@ -966,13 +966,13 @@
     }
 
     async function uploadImageToSupabase(dataUrl) {
-      if (!supabase) return null;
+      if (!supabaseClient) return null;
       try {
         const blob = dataURLtoBlob(dataUrl);
         const ext = blob.type.split('/')[1] || 'jpg';
         const path = `${Date.now()}_${Math.random().toString(36).substring(2, 9)}.${ext}`;
         
-        const { data, error } = await supabase.storage
+        const { data, error } = await supabaseClient.storage
           .from("prompt-images")
           .upload(path, blob, {
             contentType: blob.type
@@ -980,7 +980,7 @@
           
         if (error) throw error;
         
-        const { data: { publicUrl } } = supabase.storage
+        const { data: { publicUrl } } = supabaseClient.storage
           .from("prompt-images")
           .getPublicUrl(path);
           
@@ -993,12 +993,12 @@
     }
 
     async function deleteImageFromSupabase(url) {
-      if (!supabase || !url) return;
+      if (!supabaseClient || !url) return;
       try {
         const parts = url.split('/prompt-images/');
         if (parts.length > 1) {
           const path = parts[1];
-          await supabase.storage.from("prompt-images").remove([path]);
+          await supabaseClient.storage.from("prompt-images").remove([path]);
         }
       } catch (error) {
         console.warn("Could not delete image from Supabase Storage:", error);
@@ -1008,7 +1008,7 @@
     async function handleSave(event) {
       event.preventDefault();
 
-      if (!supabase) {
+      if (!supabaseClient) {
         showToast("กรุณาเชื่อมต่อกับ Supabase ก่อน", "alert-circle");
         showSettingsModal();
         return;
@@ -1054,7 +1054,7 @@
 
       if (editingId) {
         try {
-          const { error } = await supabase
+          const { error } = await supabaseClient
             .from("prompts")
             .update({
               title,
@@ -1099,7 +1099,7 @@
             updated_at: now
           };
 
-          const { data, error } = await supabase
+          const { data, error } = await supabaseClient
             .from("prompts")
             .insert([newItem])
             .select();
@@ -1275,7 +1275,7 @@
       const ok = confirm(`ลบ "${item.title || "พรอมต์นี้"}" ใช่ไหม?`);
       if (!ok) return;
 
-      if (!supabase) {
+      if (!supabaseClient) {
         showToast("กรุณาเชื่อมต่อกับ Supabase", "alert-circle");
         return;
       }
@@ -1286,7 +1286,7 @@
           await deleteImageFromSupabase(item.image_url);
         }
 
-        const { error } = await supabase
+        const { error } = await supabaseClient
           .from("prompts")
           .delete()
           .eq("id", item.id);
@@ -1307,7 +1307,7 @@
     }
 
     async function togglePin(item) {
-      if (!supabase) {
+      if (!supabaseClient) {
         showToast("กรุณาเชื่อมต่อกับ Supabase", "alert-circle");
         return;
       }
@@ -1315,7 +1315,7 @@
       const newPinned = !item.pinned;
       showLoading(true);
       try {
-        const { error } = await supabase
+        const { error } = await supabaseClient
           .from("prompts")
           .update({ pinned: newPinned, updated_at: new Date().toISOString() })
           .eq("id", item.id);
@@ -1543,7 +1543,7 @@
 
     async function handleNoteSave(e) {
       e.preventDefault();
-      if (!supabase) {
+      if (!supabaseClient) {
         showToast("กรุณาเชื่อมต่อกับ Supabase ก่อน", "alert-circle");
         showSettingsModal();
         return;
@@ -1562,7 +1562,7 @@
 
       if (editingNoteId) {
         try {
-          const { error } = await supabase
+          const { error } = await supabaseClient
             .from("notes")
             .update({ title, content, updated_at: now })
             .eq("id", editingNoteId);
@@ -1580,7 +1580,7 @@
         }
       } else {
         try {
-          const { data, error } = await supabase
+          const { data, error } = await supabaseClient
             .from("notes")
             .insert([{ title, content, created_at: now, updated_at: now }])
             .select();
@@ -1654,7 +1654,7 @@
 
         showLoading(true);
         try {
-          const { error } = await supabase.from("notes").delete().eq("id", note.id);
+          const { error } = await supabaseClient.from("notes").delete().eq("id", note.id);
           if (error) throw error;
 
           notes = notes.filter(n => n.id !== note.id);
