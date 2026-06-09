@@ -3,21 +3,21 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Prompt Keeper - คลังพรอมต์ส่วนตัว</title>
+  <title>คลังข้อมูลของ MIX NATTANON</title>
   <link rel="icon" href="logo.png" type="image/png" />
 
   <!-- SEO / Open Graph Meta Tags -->
-  <meta name="description" content="เครื่องมือสำหรับจัดเก็บและจัดการพรอมต์ AI ส่วนตัว ใช้งานง่าย รวดเร็ว และเข้าถึงได้จากทุกอุปกรณ์ด้วยระบบ Supabase" />
-  <meta property="og:title" content="Prompt Keeper - คลังพรอมต์ส่วนตัว" />
-  <meta property="og:description" content="เครื่องมือสำหรับจัดเก็บและจัดการพรอมต์ AI ส่วนตัว ใช้งานง่าย รวดเร็ว และเข้าถึงได้จากทุกอุปกรณ์ด้วยระบบ Supabase" />
+  <meta name="description" content="คลังข้อมูลของ MIX NATTANON - เครื่องมือสำหรับจัดเก็บและจัดการพรอมต์ AI และบันทึกโน้ตส่วนตัว เข้าถึงได้จากทุกอุปกรณ์ด้วยระบบ Supabase" />
+  <meta property="og:title" content="คลังข้อมูลของ MIX NATTANON" />
+  <meta property="og:description" content="คลังข้อมูลของ MIX NATTANON - เครื่องมือสำหรับจัดเก็บและจัดการพรอมต์ AI และบันทึกโน้ตส่วนตัว เข้าถึงได้จากทุกอุปกรณ์ด้วยระบบ Supabase" />
   <meta property="og:image" content="https://miximage9999-dev.github.io/MIXIMAGE/logo.png" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://miximage9999-dev.github.io/MIXIMAGE/" />
 
   <!-- Twitter Meta Tags -->
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Prompt Keeper - คลังพรอมต์ส่วนตัว" />
-  <meta name="twitter:description" content="เครื่องมือสำหรับจัดเก็บและจัดการพรอมต์ AI ส่วนตัว ใช้งานง่าย รวดเร็ว และเข้าถึงได้จากทุกอุปกรณ์ด้วยระบบ Supabase" />
+  <meta name="twitter:title" content="คลังข้อมูลของ MIX NATTANON" />
+  <meta name="twitter:description" content="คลังข้อมูลของ MIX NATTANON - เครื่องมือสำหรับจัดเก็บและจัดการพรอมต์ AI และบันทึกโน้ตส่วนตัว เข้าถึงได้จากทุกอุปกรณ์ด้วยระบบ Supabase" />
   <meta name="twitter:image" content="https://miximage9999-dev.github.io/MIXIMAGE/logo.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -261,6 +261,17 @@
       background: rgba(255, 255, 255, 0.2);
       transform: scale(0.95);
     }
+
+    /* Active Nav Switcher */
+    .active-nav {
+      color: white !important;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.34), rgba(255, 255, 255, 0.07)),
+        linear-gradient(115deg, #246fe5, #10b8b1) !important;
+      box-shadow:
+        0 8px 20px rgba(36, 111, 229, 0.14),
+        inset 0 1px 1px rgba(255, 255, 255, 0.58);
+    }
   </style>
 </head>
 <body>
@@ -271,7 +282,7 @@
         <i data-lucide="lock" class="h-8 w-8"></i>
       </div>
       <div>
-        <h2 class="text-2xl font-extrabold text-white">Prompt Keeper</h2>
+        <h2 class="text-2xl font-extrabold text-white">คลังข้อมูลของ MIX NATTANON</h2>
         <p class="mt-1 text-sm text-slate-400">กรุณาใส่รหัส PIN เพื่อเข้าใช้งาน</p>
       </div>
       
@@ -346,13 +357,23 @@
   </div>
 
   <main class="relative z-10 mx-auto flex min-h-screen w-full max-w-7xl flex-col gap-6 px-5 py-6 sm:px-8 lg:px-10">
+    <!-- Main Navigation Switcher -->
+    <div class="glass-shell flex rounded-[1.15rem] p-1.5 justify-center gap-2 max-w-sm mx-auto w-full">
+      <button id="navPromptsBtn" class="flex-1 py-2.5 rounded-full text-center text-sm font-extrabold transition-all duration-200 glass-control active-nav" type="button">
+        <i data-lucide="terminal" class="inline-block h-4 w-4 mr-2 -mt-0.5"></i>คลังพรอมต์
+      </button>
+      <button id="navNotesBtn" class="flex-1 py-2.5 rounded-full text-center text-sm font-extrabold transition-all duration-200 glass-control text-slate-500" type="button">
+        <i data-lucide="sticky-note" class="inline-block h-4 w-4 mr-2 -mt-0.5"></i>โน๊ต
+      </button>
+    </div>
+
     <header class="glass-shell flex flex-col gap-4 rounded-[1.15rem] px-5 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-6">
       <div class="min-w-0">
         <div class="mb-2 inline-flex items-center gap-2 rounded-full border border-white/70 bg-white/40 px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-slate-500 shadow-sm">
           <i data-lucide="sparkles" class="h-3.5 w-3.5 text-cyan-600"></i>
-          Prompt Keeper
+          MIX NATTANON
         </div>
-        <h1 class="text-3xl font-extrabold tracking-normal text-slate-900 sm:text-4xl">คลังพรอมต์ส่วนตัว</h1>
+        <h1 class="text-3xl font-extrabold tracking-normal text-slate-900 sm:text-4xl">คลังข้อมูลของ MIX NATTANON</h1>
       </div>
       <div class="flex flex-wrap items-center gap-3">
         <div class="glass-control flex min-w-[8.5rem] items-center justify-center gap-2 rounded-full px-4 py-3 text-sm font-semibold text-slate-700">
@@ -369,102 +390,172 @@
       </div>
     </header>
 
-    <section class="grid flex-1 gap-6 lg:grid-cols-[minmax(320px,420px)_1fr]">
-      <form id="promptForm" class="glass-shell h-fit rounded-[1.15rem] p-4 sm:p-5 lg:sticky lg:top-6" autocomplete="off">
-        <div class="mb-5 flex items-center justify-between gap-3">
-          <div>
-            <h2 id="formTitle" class="text-xl font-bold text-slate-900">เพิ่มพรอมต์</h2>
-            <p id="formMode" class="text-sm font-medium text-slate-500">การ์ดจะล็อกหลังบันทึก</p>
-          </div>
-          <span id="modeBadge" class="glass-control inline-flex items-center gap-2 rounded-full px-3 py-2 text-xs font-bold text-slate-600">
-            <i data-lucide="shield-check" class="h-4 w-4 text-cyan-600"></i>
-            พร้อมบันทึก
-          </span>
-        </div>
-
-        <div class="space-y-4">
-          <label class="block">
-            <span class="mb-2 block text-sm font-bold text-slate-700">หัวข้อ</span>
-            <input id="titleInput" class="field rounded-full px-4 py-3 text-base text-slate-900 placeholder:text-slate-400" type="text" maxlength="80" placeholder="เช่น ภาพสินค้าโทนพรีเมียม" />
-          </label>
-
-          <label class="block">
-            <span class="mb-2 block text-sm font-bold text-slate-700">พรอมต์</span>
-            <textarea id="promptInput" class="field soft-scroll min-h-[190px] resize-y rounded-[1rem] px-4 py-3 text-base leading-7 text-slate-900 placeholder:text-slate-400" required placeholder="วางพรอมต์ของคุณที่นี่"></textarea>
-          </label>
-
-          <label class="block">
-            <span class="mb-2 block text-sm font-bold text-slate-700">หมายเหตุ / แท็ก</span>
-            <textarea id="notesInput" class="field soft-scroll min-h-[86px] resize-y rounded-[1rem] px-4 py-3 text-sm leading-6 text-slate-800 placeholder:text-slate-400" maxlength="1400" placeholder="#portrait #glass #thai"></textarea>
-          </label>
-
-          <div>
-            <span class="mb-2 block text-sm font-bold text-slate-700">รูปภาพ</span>
-            <label for="imageInput" class="glass-control flex cursor-pointer items-center justify-between gap-3 rounded-[1rem] px-4 py-4 text-slate-700">
-              <span class="flex min-w-0 items-center gap-3">
-                <span class="grid h-10 w-10 flex-none place-items-center rounded-full bg-white/50 text-cyan-700 shadow-inner">
-                  <i data-lucide="image-plus" class="h-5 w-5"></i>
-                </span>
-                <span class="min-w-0">
-                  <span id="imageLabel" class="block truncate text-sm font-bold">เลือกรูปจากเครื่อง</span>
-                  <span class="block truncate text-xs font-medium text-slate-500">JPG, PNG, WebP</span>
-                </span>
-              </span>
-              <i data-lucide="plus" class="h-5 w-5 flex-none text-slate-500"></i>
-            </label>
-            <input id="imageInput" class="hidden" type="file" accept="image/*" />
-          </div>
-
-          <div id="previewWrap" class="hidden image-frame relative aspect-[4/3] w-full">
-            <img id="imagePreview" class="h-full w-full object-contain" alt="Preview" />
-            <button id="removeImageBtn" type="button" class="glass-control absolute right-3 top-3 inline-flex h-10 w-10 items-center justify-center rounded-full text-slate-700" title="ลบรูป">
-              <i data-lucide="x" class="h-5 w-5"></i>
-            </button>
-          </div>
-
-          <div class="flex flex-col gap-3 sm:flex-row">
-            <button id="saveBtn" type="submit" class="primary-glass glass-control inline-flex min-h-[3.35rem] flex-1 items-center justify-center gap-2 rounded-full px-5 py-3 text-base font-extrabold">
-              <i data-lucide="save" class="h-5 w-5"></i>
-              <span id="saveBtnText">บันทึกและล็อก</span>
-            </button>
-            <button id="cancelEditBtn" type="button" class="glass-control hidden min-h-[3.35rem] items-center justify-center gap-2 rounded-full px-5 py-3 text-base font-bold text-slate-700">
-              <i data-lucide="x-circle" class="h-5 w-5"></i>
-              ยกเลิก
-            </button>
-          </div>
-        </div>
-      </form>
-
-      <section class="min-w-0">
-        <div class="glass-shell mb-4 flex flex-col gap-3 rounded-[1.15rem] p-3 sm:flex-row sm:items-center sm:justify-between">
-          <div class="flex min-w-0 flex-wrap gap-2">
-            <button type="button" data-page="1" class="page-tab glass-control active inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-extrabold text-slate-700">
-              <i data-lucide="pin" class="h-4 w-4"></i>
-              <span>หน้า 1</span>
-              <span id="pinnedCount" class="rounded-full bg-white/35 px-2 py-0.5 text-xs">0</span>
-            </button>
-            <button type="button" data-page="2" class="page-tab glass-control inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-extrabold text-slate-700">
-              <i data-lucide="archive" class="h-4 w-4"></i>
-              <span>หน้า 2</span>
-              <span id="savedCount" class="rounded-full bg-white/35 px-2 py-0.5 text-xs">0</span>
-            </button>
-          </div>
-          <div id="pageLabel" class="text-sm font-bold text-slate-500">รายการปักหมุด</div>
-        </div>
-
-        <div id="emptyState" class="glass-shell grid min-h-[28rem] place-items-center rounded-[1.15rem] p-8 text-center">
-          <div class="mx-auto max-w-sm">
-            <div class="glass-control mx-auto mb-5 grid h-20 w-20 place-items-center rounded-full text-cyan-700">
-              <i data-lucide="notebook-pen" class="h-9 w-9"></i>
+    <div id="promptsSection" class="w-full">
+      <section class="grid flex-1 gap-6 lg:grid-cols-[minmax(320px,420px)_1fr]">
+        <form id="promptForm" class="glass-shell h-fit rounded-[1.15rem] p-4 sm:p-5 lg:sticky lg:top-6" autocomplete="off">
+          <div class="mb-5 flex items-center justify-between gap-3">
+            <div>
+              <h2 id="formTitle" class="text-xl font-bold text-slate-900">เพิ่มพรอมต์</h2>
+              <p id="formMode" class="text-sm font-medium text-slate-500">การ์ดจะล็อกหลังบันทึก</p>
             </div>
-            <h2 id="emptyTitle" class="text-2xl font-extrabold text-slate-900">ยังไม่มีพรอมต์</h2>
-            <p id="emptyText" class="mt-2 text-sm font-medium leading-6 text-slate-500">เพิ่มรายการแรกจากฟอร์ม แล้วการ์ดจะปรากฏตรงนี้</p>
+            <span id="modeBadge" class="glass-control inline-flex items-center gap-2 rounded-full px-3 py-2 text-xs font-bold text-slate-600">
+              <i data-lucide="shield-check" class="h-4 w-4 text-cyan-600"></i>
+              พร้อมบันทึก
+            </span>
           </div>
-        </div>
 
-        <div id="cardsGrid" class="keeper-grid grid hidden gap-3"></div>
+          <div class="space-y-4">
+            <label class="block">
+              <span class="mb-2 block text-sm font-bold text-slate-700">หัวข้อ</span>
+              <input id="titleInput" class="field rounded-full px-4 py-3 text-base text-slate-900 placeholder:text-slate-400" type="text" maxlength="80" placeholder="เช่น ภาพสินค้าโทนพรีเมียม" />
+            </label>
+
+            <label class="block">
+              <span class="mb-2 block text-sm font-bold text-slate-700">พรอมต์</span>
+              <textarea id="promptInput" class="field soft-scroll min-h-[190px] resize-y rounded-[1rem] px-4 py-3 text-base leading-7 text-slate-900 placeholder:text-slate-400" required placeholder="วางพรอมต์ของคุณที่นี่"></textarea>
+            </label>
+
+            <label class="block">
+              <span class="mb-2 block text-sm font-bold text-slate-700">หมายเหตุ / แท็ก</span>
+              <textarea id="notesInput" class="field soft-scroll min-h-[86px] resize-y rounded-[1rem] px-4 py-3 text-sm leading-6 text-slate-800 placeholder:text-slate-400" maxlength="1400" placeholder="#portrait #glass #thai"></textarea>
+            </label>
+
+            <label class="block">
+              <span class="mb-2 block text-sm font-bold text-slate-700">จัดเก็บไว้ที่หน้า</span>
+              <select id="pageSelect" class="field rounded-full px-4 py-3 text-base text-slate-900 bg-white/40">
+                <option value="main">หน้าหลัก</option>
+              </select>
+            </label>
+
+            <div>
+              <span class="mb-2 block text-sm font-bold text-slate-700">รูปภาพ</span>
+              <label for="imageInput" class="glass-control flex cursor-pointer items-center justify-between gap-3 rounded-[1rem] px-4 py-4 text-slate-700">
+                <span class="flex min-w-0 items-center gap-3">
+                  <span class="grid h-10 w-10 flex-none place-items-center rounded-full bg-white/50 text-cyan-700 shadow-inner">
+                    <i data-lucide="image-plus" class="h-5 w-5"></i>
+                  </span>
+                  <span class="min-w-0">
+                    <span id="imageLabel" class="block truncate text-sm font-bold">เลือกรูปจากเครื่อง</span>
+                    <span class="block truncate text-xs font-medium text-slate-500">JPG, PNG, WebP</span>
+                  </span>
+                </span>
+                <i data-lucide="plus" class="h-5 w-5 flex-none text-slate-500"></i>
+              </label>
+              <input id="imageInput" class="hidden" type="file" accept="image/*" />
+            </div>
+
+            <div id="previewWrap" class="hidden image-frame relative aspect-[4/3] w-full">
+              <img id="imagePreview" class="h-full w-full object-contain" alt="Preview" />
+              <button id="removeImageBtn" type="button" class="glass-control absolute right-3 top-3 inline-flex h-10 w-10 items-center justify-center rounded-full text-slate-700" title="ลบรูป">
+                <i data-lucide="x" class="h-5 w-5"></i>
+              </button>
+            </div>
+
+            <div class="flex flex-col gap-3 sm:flex-row">
+              <button id="saveBtn" type="submit" class="primary-glass glass-control inline-flex min-h-[3.35rem] flex-1 items-center justify-center gap-2 rounded-full px-5 py-3 text-base font-extrabold">
+                <i data-lucide="save" class="h-5 w-5"></i>
+                <span id="saveBtnText">บันทึกและล็อก</span>
+              </button>
+              <button id="cancelEditBtn" type="button" class="glass-control hidden min-h-[3.35rem] items-center justify-center gap-2 rounded-full px-5 py-3 text-base font-bold text-slate-700">
+                <i data-lucide="x-circle" class="h-5 w-5"></i>
+                ยกเลิก
+              </button>
+            </div>
+          </div>
+        </form>
+
+        <section class="min-w-0">
+          <div class="glass-shell mb-4 flex flex-col gap-3 rounded-[1.15rem] p-3 sm:flex-row sm:items-center sm:justify-between">
+            <div class="flex items-center gap-2 flex-wrap">
+              <div id="tabsWrapper" class="flex min-w-0 flex-wrap gap-2">
+                <!-- Rendered dynamically via JS -->
+              </div>
+              <button id="addPageBtn" type="button" class="glass-control inline-flex h-9 w-9 items-center justify-center rounded-full text-slate-700 hover:bg-slate-200/50" title="เพิ่มหน้าใหม่">
+                <i data-lucide="plus" class="h-4 w-4"></i>
+              </button>
+            </div>
+            <div id="pageLabel" class="text-sm font-bold text-slate-500">รายการปักหมุด</div>
+          </div>
+
+          <div id="emptyState" class="glass-shell grid min-h-[28rem] place-items-center rounded-[1.15rem] p-8 text-center">
+            <div class="mx-auto max-w-sm">
+              <div class="glass-control mx-auto mb-5 grid h-20 w-20 place-items-center rounded-full text-cyan-700">
+                <i data-lucide="notebook-pen" class="h-9 w-9"></i>
+              </div>
+              <h2 id="emptyTitle" class="text-2xl font-extrabold text-slate-900">ยังไม่มีพรอมต์</h2>
+              <p id="emptyText" class="mt-2 text-sm font-medium leading-6 text-slate-500">เพิ่มรายการแรกจากฟอร์ม แล้วการ์ดจะปรากฏตรงนี้</p>
+            </div>
+          </div>
+
+          <div id="cardsGrid" class="keeper-grid grid hidden gap-3"></div>
+        </section>
       </section>
-    </section>
+    </div>
+
+    <!-- Notes Section View -->
+    <div id="notesSection" class="hidden w-full">
+      <section class="grid flex-1 gap-6 lg:grid-cols-[minmax(320px,420px)_1fr]">
+        <!-- Note Form -->
+        <form id="noteForm" class="glass-shell h-fit rounded-[1.15rem] p-4 sm:p-5 lg:sticky lg:top-6" autocomplete="off">
+          <div class="mb-5 flex items-center justify-between gap-3">
+            <div>
+              <h2 id="noteFormTitle" class="text-xl font-bold text-slate-900">เพิ่มโน้ต</h2>
+              <p id="noteFormMode" class="text-sm font-medium text-slate-500">บันทึกอัตโนมัติลงคลาวด์</p>
+            </div>
+            <span id="noteModeBadge" class="glass-control inline-flex items-center gap-2 rounded-full px-3 py-2 text-xs font-bold text-slate-600">
+              <i data-lucide="shield-check" class="h-4 w-4 text-cyan-600"></i>
+              พร้อมบันทึก
+            </span>
+          </div>
+
+          <div class="space-y-4">
+            <label class="block">
+              <span class="mb-2 block text-sm font-bold text-slate-700">หัวข้อ</span>
+              <input id="noteTitleInput" class="field rounded-full px-4 py-3 text-base text-slate-900 placeholder:text-slate-400" type="text" maxlength="80" placeholder="เช่น ไอเดียแต่งเพลง หรือ ข้อมูลด่วน" />
+            </label>
+
+            <label class="block">
+              <span class="mb-2 block text-sm font-bold text-slate-700">เนื้อหา</span>
+              <textarea id="noteContentInput" class="field soft-scroll min-h-[260px] resize-y rounded-[1rem] px-4 py-3 text-base leading-7 text-slate-900 placeholder:text-slate-400" required placeholder="พิมพ์ข้อความโน้ตของคุณที่นี่"></textarea>
+            </label>
+
+            <div class="flex flex-col gap-3 sm:flex-row">
+              <button id="noteSaveBtn" type="submit" class="primary-glass glass-control inline-flex min-h-[3.35rem] flex-1 items-center justify-center gap-2 rounded-full px-5 py-3 text-base font-extrabold">
+                <i data-lucide="save" class="h-5 w-5"></i>
+                <span id="noteSaveBtnText">บันทึกโน้ต</span>
+              </button>
+              <button id="cancelNoteEditBtn" type="button" class="glass-control hidden min-h-[3.35rem] items-center justify-center gap-2 rounded-full px-5 py-3 text-base font-bold text-slate-700">
+                <i data-lucide="x-circle" class="h-5 w-5"></i>
+                ยกเลิก
+              </button>
+            </div>
+          </div>
+        </form>
+
+        <!-- Notes Grid -->
+        <section class="min-w-0">
+          <div class="glass-shell mb-4 flex items-center justify-between rounded-[1.15rem] p-3">
+            <div class="text-sm font-extrabold text-slate-700 flex items-center gap-2">
+              <i data-lucide="sticky-note" class="h-4 w-4 text-cyan-600"></i>
+              <span>โน้ตทั้งหมด</span>
+              <span id="notesCountBadge" class="rounded-full bg-white/40 border border-white/60 px-2 py-0.5 text-xs text-slate-600 font-bold">0</span>
+            </div>
+          </div>
+
+          <div id="notesEmptyState" class="glass-shell grid min-h-[28rem] place-items-center rounded-[1.15rem] p-8 text-center">
+            <div class="mx-auto max-w-sm">
+              <div class="glass-control mx-auto mb-5 grid h-20 w-20 place-items-center rounded-full text-cyan-700">
+                <i data-lucide="sticky-note" class="h-9 w-9"></i>
+              </div>
+              <h2 class="text-2xl font-extrabold text-slate-900">ยังไม่มีโน้ต</h2>
+              <p class="mt-2 text-sm font-medium leading-6 text-slate-500">เพิ่มรายการแรกจากฟอร์มด้านซ้ายได้เลยครับ</p>
+            </div>
+          </div>
+
+          <div id="notesGrid" class="keeper-grid grid hidden gap-3"></div>
+        </section>
+      </section>
+    </div>
   </main>
 
   <div id="toast" class="toast glass-shell fixed bottom-5 left-1/2 z-50 flex max-w-[calc(100vw-2rem)] -translate-x-1/2 items-center gap-3 rounded-full px-4 py-3 text-sm font-bold text-slate-800 shadow-2xl">
@@ -494,8 +585,6 @@
       formMode: document.getElementById("formMode"),
       modeBadge: document.getElementById("modeBadge"),
       promptCount: document.getElementById("promptCount"),
-      pinnedCount: document.getElementById("pinnedCount"),
-      savedCount: document.getElementById("savedCount"),
       pageLabel: document.getElementById("pageLabel"),
       emptyState: document.getElementById("emptyState"),
       emptyTitle: document.getElementById("emptyTitle"),
@@ -514,15 +603,41 @@
       settingsForm: document.getElementById("settingsForm"),
       supabaseUrlInput: document.getElementById("supabaseUrlInput"),
       supabaseKeyInput: document.getElementById("supabaseKeyInput"),
-      loadingOverlay: document.getElementById("loadingOverlay")
+      loadingOverlay: document.getElementById("loadingOverlay"),
+      
+      // Main Nav buttons
+      navPromptsBtn: document.getElementById("navPromptsBtn"),
+      navNotesBtn: document.getElementById("navNotesBtn"),
+      promptsSection: document.getElementById("promptsSection"),
+      notesSection: document.getElementById("notesSection"),
+      
+      // Dynamic page selector and tabs button
+      addPageBtn: document.getElementById("addPageBtn"),
+      pageSelect: document.getElementById("pageSelect"),
+      
+      // Notes Section elements
+      noteForm: document.getElementById("noteForm"),
+      noteTitleInput: document.getElementById("noteTitleInput"),
+      noteContentInput: document.getElementById("noteContentInput"),
+      noteSaveBtnText: document.getElementById("noteSaveBtnText"),
+      noteFormTitle: document.getElementById("noteFormTitle"),
+      noteFormMode: document.getElementById("noteFormMode"),
+      noteModeBadge: document.getElementById("noteModeBadge"),
+      cancelNoteEditBtn: document.getElementById("cancelNoteEditBtn"),
+      notesCountBadge: document.getElementById("notesCountBadge"),
+      notesEmptyState: document.getElementById("notesEmptyState"),
+      notesGrid: document.getElementById("notesGrid")
     };
 
     let prompts = [];
+    let notes = [];
+    let customPages = [];
     let editingId = null;
+    let editingNoteId = null;
     let selectedImageData = null;
     let currentImageData = null;
     let toastTimer = null;
-    let activePage = 1;
+    let activePage = "pinned";
     let supabase = null;
 
     async function init() {
@@ -533,6 +648,8 @@
       if (sessionStorage.getItem("prompt_keeper_unlocked") === "true") {
         if (supabase) {
           prompts = await loadPrompts();
+          notes = await loadNotes();
+          extractCustomPages();
         } else {
           showSettingsModal();
         }
@@ -540,24 +657,112 @@
       
       activePage = getInitialPage(prompts);
       bindEvents();
+      renderTabs();
       renderCards();
+      renderNotes();
       refreshIcons();
     }
 
     function bindEvents() {
+      // Prompts Form
       els.form.addEventListener("submit", handleSave);
       els.imageInput.addEventListener("change", handleImageSelect);
       els.removeImageBtn.addEventListener("click", clearImage);
       els.clearFormBtn.addEventListener("click", resetForm);
       els.cancelEditBtn.addEventListener("click", resetForm);
       els.cardsGrid.addEventListener("click", handleCardAction);
+      
+      // Notes Form
+      els.noteForm.addEventListener("submit", handleNoteSave);
+      els.cancelNoteEditBtn.addEventListener("click", resetNoteForm);
+      els.notesGrid.addEventListener("click", handleNoteAction);
+      
+      // Main Nav
+      els.navPromptsBtn.addEventListener("click", () => switchSection("prompts"));
+      els.navNotesBtn.addEventListener("click", () => switchSection("notes"));
+      
+      // Settings
       els.openSettingsBtn.addEventListener("click", showSettingsModal);
       els.closeSettingsBtn.addEventListener("click", hideSettingsModal);
       els.settingsForm.addEventListener("submit", handleSettingsSubmit);
       
-      document.querySelectorAll("[data-page]").forEach((button) => {
-        button.addEventListener("click", () => setActivePage(Number(button.dataset.page)));
+      // Dynamic page add
+      els.addPageBtn.addEventListener("click", handleAddPage);
+    }
+
+    function switchSection(section) {
+      if (section === "prompts") {
+        els.navPromptsBtn.classList.add("active-nav");
+        els.navPromptsBtn.classList.remove("text-slate-500");
+        els.navNotesBtn.classList.remove("active-nav");
+        els.navNotesBtn.classList.add("text-slate-500");
+        
+        els.promptsSection.classList.remove("hidden");
+        els.notesSection.classList.add("hidden");
+      } else {
+        els.navNotesBtn.classList.add("active-nav");
+        els.navNotesBtn.classList.remove("text-slate-500");
+        els.navPromptsBtn.classList.remove("active-nav");
+        els.navPromptsBtn.classList.add("text-slate-500");
+        
+        els.notesSection.classList.remove("hidden");
+        els.promptsSection.classList.add("hidden");
+        
+        renderNotes();
+      }
+      refreshIcons();
+    }
+
+    function extractCustomPages() {
+      customPages = [];
+      prompts.forEach(p => {
+        if (p.page && p.page !== "main" && p.page !== "pinned" && p.page !== "2" && p.page !== "1") {
+          if (!customPages.includes(p.page)) {
+            customPages.push(p.page);
+          }
+        }
       });
+      updatePageSelector();
+    }
+
+    function updatePageSelector() {
+      const currentValue = els.pageSelect.value;
+      let html = `<option value="main">หน้าหลัก</option>`;
+      customPages.forEach(page => {
+        html += `<option value="${escapeHtml(page)}">${escapeHtml(page)}</option>`;
+      });
+      els.pageSelect.innerHTML = html;
+      if ([...els.pageSelect.options].some(opt => opt.value === currentValue)) {
+        els.pageSelect.value = currentValue;
+      }
+    }
+
+    function handleAddPage() {
+      const name = prompt("ระบุชื่อหน้าใหม่ (เช่น งานเพลง, เขียนบท):");
+      if (!name) return;
+      const cleanName = name.trim();
+      if (!cleanName) return;
+      
+      if (cleanName === "pinned" || cleanName === "main" || cleanName === "ปักหมุด" || cleanName === "หน้าหลัก") {
+        showToast("ไม่สามารถใช้ชื่อสงวนนี้ได้", "alert-circle");
+        return;
+      }
+      
+      if (customPages.includes(cleanName)) {
+        showToast("มีหน้านี้อยู่แล้ว", "alert-circle");
+        return;
+      }
+      
+      customPages.push(cleanName);
+      renderTabs();
+      updatePageSelector();
+      
+      // Auto-select the newly added page
+      els.pageSelect.value = cleanName;
+      activePage = cleanName;
+      renderTabs();
+      renderCards();
+      showToast(`เพิ่มหน้า "${cleanName}" แล้ว`, "folder-plus");
     }
 
     function initPIN() {
@@ -608,8 +813,12 @@
             // Post-unlock setup
             if (initSupabase()) {
               prompts = await loadPrompts();
+              notes = await loadNotes();
+              extractCustomPages();
               activePage = getInitialPage(prompts);
+              renderTabs();
               renderCards();
+              renderNotes();
             } else {
               showSettingsModal();
             }
@@ -689,8 +898,12 @@
       
       if (initSupabase()) {
         prompts = await loadPrompts();
+        notes = await loadNotes();
+        extractCustomPages();
         activePage = getInitialPage(prompts);
+        renderTabs();
         renderCards();
+        renderNotes();
       }
     }
 
@@ -714,9 +927,29 @@
       }
     }
 
+    async function loadNotes() {
+      if (!supabase) return [];
+      showLoading(true);
+      try {
+        const { data, error } = await supabase
+          .from("notes")
+          .select("*")
+          .order("created_at", { ascending: false });
+          
+        showLoading(false);
+        if (error) throw error;
+        return data || [];
+      } catch (error) {
+        console.error("Error loading notes:", error);
+        showToast("ดึงข้อมูลโน้ตล้มเหลว", "alert-circle");
+        showLoading(false);
+        return [];
+      }
+    }
+
     function getInitialPage(items) {
-      if (!items.length) return 1;
-      return items.some((item) => item.pinned) ? 1 : 2;
+      if (!items.length) return "main";
+      return items.some((item) => item.pinned) ? "pinned" : "main";
     }
 
     // Convert Base64 dataURL to Blob for Supabase storage upload
@@ -783,7 +1016,8 @@
 
       const title = els.titleInput.value.trim() || "พรอมต์ไม่มีชื่อ";
       const prompt = els.promptInput.value.trim();
-      const notes = els.notesInput.value.trim();
+      const notesVal = els.notesInput.value.trim();
+      const page = els.pageSelect.value;
 
       if (!prompt) {
         els.promptInput.focus();
@@ -798,7 +1032,7 @@
         imageUrl = await uploadImageToSupabase(selectedImageData);
         if (!imageUrl) {
           showLoading(false);
-          return; // Stop if image upload failed
+          return;
         }
         
         // Delete old image if updating
@@ -825,8 +1059,9 @@
             .update({
               title,
               prompt,
-              notes,
+              notes: notesVal,
               image_url: imageUrl,
+              page,
               updated_at: now
             })
             .eq("id", editingId);
@@ -839,12 +1074,13 @@
               ...prompts[index],
               title,
               prompt,
-              notes,
+              notes: notesVal,
               image_url: imageUrl,
+              page,
               updated_at: now
             };
           }
-          activePage = prompts[index].pinned ? 1 : 2;
+          activePage = prompts[index].pinned ? "pinned" : page;
           showToast("บันทึกการแก้ไขและล็อกแล้ว", "lock");
         } catch (error) {
           console.error("Error updating prompt:", error);
@@ -855,9 +1091,10 @@
           const newItem = {
             title,
             prompt,
-            notes,
+            notes: notesVal,
             image_url: imageUrl,
             pinned: false,
+            page,
             created_at: now,
             updated_at: now
           };
@@ -872,7 +1109,7 @@
           if (data && data[0]) {
             prompts.unshift(data[0]);
           }
-          activePage = 2;
+          activePage = page;
           showToast("บันทึกและล็อกการ์ดแล้ว", "lock");
         } catch (error) {
           console.error("Error inserting prompt:", error);
@@ -880,8 +1117,10 @@
         }
       }
 
+      extractCustomPages();
       showLoading(false);
       resetForm();
+      renderTabs();
       renderCards();
     }
 
@@ -1009,6 +1248,7 @@
       els.titleInput.value = item.title || "";
       els.promptInput.value = item.prompt || "";
       els.notesInput.value = item.notes || "";
+      els.pageSelect.value = item.page && item.page !== "2" && item.page !== "1" ? item.page : "main";
 
       if (currentImageData) {
         showPreview(currentImageData, "ใช้รูปเดิม");
@@ -1055,6 +1295,8 @@
 
         prompts = prompts.filter((prompt) => prompt.id !== item.id);
         if (editingId === item.id) resetForm(false);
+        extractCustomPages();
+        renderTabs();
         renderCards();
         showToast("ลบการ์ดแล้ว", "trash-2");
       } catch (error) {
@@ -1089,9 +1331,10 @@
           };
         }
 
-        activePage = newPinned ? 1 : 2;
+        activePage = newPinned ? "pinned" : (item.page && item.page !== "2" && item.page !== "1" ? item.page : "main");
+        renderTabs();
         renderCards();
-        showToast(newPinned ? "ปักหมุดไปหน้า 1 แล้ว" : "ย้ายกลับไปหน้า 2 แล้ว", newPinned ? "pin" : "pin-off");
+        showToast(newPinned ? "ปักหมุดไปหน้า 1 แล้ว" : "ย้ายกลับแล้ว", newPinned ? "pin" : "pin-off");
       } catch (error) {
         console.error("Error pinning prompt:", error);
         showToast("เปลี่ยนสถานะปักหมุดไม่สำเร็จ", "alert-circle");
@@ -1119,32 +1362,74 @@
       if (showMessage) showToast("ล้างฟอร์มแล้ว", "rotate-ccw");
     }
 
-    function setActivePage(page) {
-      activePage = page === 1 ? 1 : 2;
-      renderCards();
-    }
-
     function isPinned(item) {
       return Boolean(item.pinned);
     }
 
+    function renderTabs() {
+      const tabsWrapper = document.getElementById("tabsWrapper");
+      if (!tabsWrapper) return;
+      
+      const pinnedCount = prompts.filter(isPinned).length;
+      const mainCount = prompts.filter((p) => !isPinned(p) && (!p.page || p.page === "main" || p.page === "2" || p.page === "1")).length;
+      
+      let html = `
+        <button type="button" data-page-id="pinned" class="page-tab glass-control ${activePage === "pinned" ? "active" : ""} inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-extrabold text-slate-700">
+          <i data-lucide="pin" class="h-4 w-4"></i>
+          <span>ปักหมุด</span>
+          <span class="rounded-full bg-white/35 px-2 py-0.5 text-xs">${pinnedCount}</span>
+        </button>
+        <button type="button" data-page-id="main" class="page-tab glass-control ${activePage === "main" ? "active" : ""} inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-extrabold text-slate-700">
+          <i data-lucide="archive" class="h-4 w-4"></i>
+          <span>หน้าหลัก</span>
+          <span class="rounded-full bg-white/35 px-2 py-0.5 text-xs">${mainCount}</span>
+        </button>
+      `;
+      
+      customPages.forEach(page => {
+        const count = prompts.filter(p => !isPinned(p) && p.page === page).length;
+        html += `
+          <button type="button" data-page-id="${escapeHtml(page)}" class="page-tab glass-control ${activePage === page ? "active" : ""} inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-extrabold text-slate-700">
+            <i data-lucide="folder" class="h-4 w-4"></i>
+            <span>${escapeHtml(page)}</span>
+            <span class="rounded-full bg-white/35 px-2 py-0.5 text-xs">${count}</span>
+          </button>
+        `;
+      });
+      
+      tabsWrapper.innerHTML = html;
+      
+      tabsWrapper.querySelectorAll("[data-page-id]").forEach(btn => {
+        btn.addEventListener("click", () => {
+          activePage = btn.getAttribute("data-page-id");
+          renderTabs();
+          renderCards();
+        });
+      });
+      
+      refreshIcons();
+    }
+
     function renderCards() {
       els.promptCount.textContent = prompts.length;
-      const pinnedItems = prompts.filter(isPinned);
-      const savedItems = prompts.filter((item) => !isPinned(item));
-      const visibleItems = activePage === 1 ? pinnedItems : savedItems;
+      
+      let visibleItems = [];
+      if (activePage === "pinned") {
+        visibleItems = prompts.filter(isPinned);
+        els.pageLabel.textContent = "รายการปักหมุด";
+      } else if (activePage === "main") {
+        visibleItems = prompts.filter(p => !isPinned(p) && (!p.page || p.page === "main" || p.page === "2" || p.page === "1"));
+        els.pageLabel.textContent = "รายการหน้าหลัก";
+      } else {
+        visibleItems = prompts.filter(p => !isPinned(p) && p.page === activePage);
+        els.pageLabel.textContent = `รายการหน้า: ${activePage}`;
+      }
+      
       const hasVisibleItems = visibleItems.length > 0;
 
-      els.pinnedCount.textContent = pinnedItems.length;
-      els.savedCount.textContent = savedItems.length;
-      els.pageLabel.textContent = activePage === 1 ? "รายการปักหมุด" : "รายการบันทึก";
-      document.querySelectorAll("[data-page]").forEach((button) => {
-        button.classList.toggle("active", Number(button.dataset.page) === activePage);
-      });
-
-      els.emptyTitle.textContent = activePage === 1 ? "ยังไม่มีรายการปักหมุด" : "ยังไม่มีพรอมต์ในหน้า 2";
-      els.emptyText.textContent = activePage === 1
-        ? "กดปักหมุดที่การ์ดในหน้า 2 แล้วรายการจะมาอยู่ตรงนี้"
+      els.emptyTitle.textContent = activePage === "pinned" ? "ยังไม่มีรายการปักหมุด" : `ยังไม่มีพรอมต์ในหน้า${activePage === "main" ? "หลัก" : " " + activePage}`;
+      els.emptyText.textContent = activePage === "pinned"
+        ? "กดปักหมุดที่การ์ดแล้วรายการจะมาอยู่ตรงนี้"
         : "บันทึกพรอมต์ใหม่ แล้วการ์ดจะย้ายมาอยู่หน้านี้";
       els.emptyState.classList.toggle("hidden", hasVisibleItems);
       els.cardsGrid.classList.toggle("hidden", !hasVisibleItems);
@@ -1159,7 +1444,7 @@
         const isEditing = item.id === editingId;
         const pinned = isPinned(item);
         const date = formatDate(item.updated_at || item.created_at || item.updatedAt || item.createdAt);
-        const notes = item.notes ? `<p class="mt-2 max-h-14 overflow-auto whitespace-pre-wrap text-xs leading-5 text-slate-600 soft-scroll">${escapeHtml(item.notes)}</p>` : "";
+        const notesVal = item.notes ? `<p class="mt-2 max-h-14 overflow-auto whitespace-pre-wrap text-xs leading-5 text-slate-600 soft-scroll">${escapeHtml(item.notes)}</p>` : "";
         
         const cardImage = item.image_url || item.image;
         const image = cardImage
@@ -1187,7 +1472,7 @@
               </div>
             </div>
             <p class="mt-3 max-h-32 overflow-auto whitespace-pre-wrap break-words rounded-[8px] border border-white/60 bg-white/32 p-2.5 text-xs leading-6 text-slate-800 soft-scroll">${escapeHtml(item.prompt || "")}</p>
-            ${notes}
+            ${notesVal}
             <div class="mt-3 grid grid-cols-3 gap-2">
               <button type="button" data-action="copy" data-id="${item.id}" class="glass-control inline-flex min-h-[2.45rem] items-center justify-center gap-1.5 rounded-full px-2 text-xs font-bold text-slate-700" title="คัดลอก">
                 <i data-lucide="copy" class="h-4 w-4"></i><span>คัดลอก</span>
@@ -1205,6 +1490,186 @@
 
       refreshIcons();
     }
+
+    // --- Notes Section functions ---
+
+    function renderNotes() {
+      if (!els.notesGrid) return;
+      els.notesCountBadge.textContent = notes.length;
+      const hasNotes = notes.length > 0;
+      els.notesEmptyState.classList.toggle("hidden", hasNotes);
+      els.notesGrid.classList.toggle("hidden", !hasNotes);
+
+      if (!hasNotes) {
+        els.notesGrid.innerHTML = "";
+        refreshIcons();
+        return;
+      }
+
+      els.notesGrid.innerHTML = notes.map((note) => {
+        const isEditing = note.id === editingNoteId;
+        const date = formatDate(note.updated_at || note.created_at);
+        const titleHtml = note.title ? `<h3 class="break-words text-base font-extrabold leading-6 text-slate-900">${escapeHtml(note.title)}</h3>` : `<h3 class="break-words text-base font-bold italic leading-6 text-slate-400">ไม่มีหัวข้อ</h3>`;
+
+        return `
+          <article class="prompt-card ${isEditing ? "editing" : ""} overflow-hidden p-3">
+            <div class="flex items-start justify-between gap-2">
+              <div class="min-w-0">
+                ${titleHtml}
+                <p class="mt-1 text-[11px] font-bold uppercase tracking-[0.10em] text-slate-400">${date}</p>
+              </div>
+              <span class="glass-control inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-bold text-slate-600">
+                <i data-lucide="sticky-note" class="h-3.5 w-3.5 text-cyan-600"></i>โน้ต
+              </span>
+            </div>
+            <p class="mt-3 max-h-48 overflow-auto whitespace-pre-wrap break-words rounded-[8px] border border-white/60 bg-white/32 p-2.5 text-xs leading-6 text-slate-800 soft-scroll">${escapeHtml(note.content || "")}</p>
+            <div class="mt-3 grid grid-cols-3 gap-2">
+              <button type="button" data-action="copy-note" data-id="${note.id}" class="glass-control inline-flex min-h-[2.45rem] items-center justify-center gap-1.5 rounded-full px-2 text-xs font-bold text-slate-700" title="คัดลอก">
+                <i data-lucide="copy" class="h-4 w-4"></i><span>คัดลอก</span>
+              </button>
+              <button type="button" data-action="edit-note" data-id="${note.id}" class="glass-control inline-flex min-h-[2.45rem] items-center justify-center gap-1.5 rounded-full px-2 text-xs font-bold text-slate-700" title="แก้ไข">
+                <i data-lucide="pencil" class="h-4 w-4"></i><span>แก้ไข</span>
+              </button>
+              <button type="button" data-action="delete-note" data-id="${note.id}" class="danger-glass glass-control inline-flex min-h-[2.45rem] items-center justify-center gap-1.5 rounded-full px-2 text-xs font-bold" title="ลบ">
+                <i data-lucide="trash-2" class="h-4 w-4"></i><span>ลบ</span>
+              </button>
+            </div>
+          </article>
+        `;
+      }).join("");
+
+      refreshIcons();
+    }
+
+    async function handleNoteSave(e) {
+      e.preventDefault();
+      if (!supabase) {
+        showToast("กรุณาเชื่อมต่อกับ Supabase ก่อน", "alert-circle");
+        showSettingsModal();
+        return;
+      }
+
+      const title = els.noteTitleInput.value.trim();
+      const content = els.noteContentInput.value.trim();
+
+      if (!content) {
+        showToast("กรุณากรอกเนื้อหาโน้ต", "alert-circle");
+        return;
+      }
+
+      showLoading(true);
+      const now = new Date().toISOString();
+
+      if (editingNoteId) {
+        try {
+          const { error } = await supabase
+            .from("notes")
+            .update({ title, content, updated_at: now })
+            .eq("id", editingNoteId);
+
+          if (error) throw error;
+
+          const idx = notes.findIndex(n => n.id === editingNoteId);
+          if (idx !== -1) {
+            notes[idx] = { ...notes[idx], title, content, updated_at: now };
+          }
+          showToast("บันทึกโน้ตสำเร็จแล้ว", "check");
+        } catch (error) {
+          console.error(error);
+          showToast("บันทึกโน้ตล้มเหลว", "alert-circle");
+        }
+      } else {
+        try {
+          const { data, error } = await supabase
+            .from("notes")
+            .insert([{ title, content, created_at: now, updated_at: now }])
+            .select();
+
+          if (error) throw error;
+          
+          if (data && data[0]) {
+            notes.unshift(data[0]);
+          }
+          showToast("บันทึกโน้ตใหม่แล้ว", "check");
+        } catch (error) {
+          console.error(error);
+          showToast("บันทึกโน้ตล้มเหลว", "alert-circle");
+        }
+      }
+
+      showLoading(false);
+      resetNoteForm();
+      renderNotes();
+    }
+
+    function resetNoteForm() {
+      editingNoteId = null;
+      els.noteForm.reset();
+      els.noteFormTitle.textContent = "เพิ่มโน้ต";
+      els.noteSaveBtnText.textContent = "บันทึกโน้ต";
+      els.cancelNoteEditBtn.classList.add("hidden");
+      els.cancelNoteEditBtn.classList.remove("inline-flex");
+      renderNotes();
+    }
+
+    async function handleNoteAction(event) {
+      const button = event.target.closest("[data-action]");
+      if (!button) return;
+
+      const id = button.getAttribute("data-id");
+      const action = button.getAttribute("data-action");
+      const note = notes.find(n => n.id === id);
+      if (!note) return;
+
+      if (action === "copy-note") {
+        try {
+          let copied = false;
+          if (navigator.clipboard && window.isSecureContext) {
+            try {
+              await navigator.clipboard.writeText(note.content);
+              copied = true;
+            } catch (err) {}
+          }
+          if (!copied) {
+            fallbackCopy(note.content);
+          }
+          showToast("คัดลอกโน้ตสำเร็จแล้ว", "copy-check");
+        } catch (e) {
+          showToast("คัดลอกไม่สำเร็จ", "alert-circle");
+        }
+      } else if (action === "edit-note") {
+        editingNoteId = note.id;
+        els.noteTitleInput.value = note.title || "";
+        els.noteContentInput.value = note.content || "";
+        els.noteFormTitle.textContent = "แก้ไขโน้ต";
+        els.noteSaveBtnText.textContent = "บันทึกโน้ต";
+        els.cancelNoteEditBtn.classList.remove("hidden");
+        els.cancelNoteEditBtn.classList.add("inline-flex");
+
+        renderNotes();
+        els.noteForm.scrollIntoView({ behavior: "smooth", block: "start" });
+      } else if (action === "delete-note") {
+        const ok = confirm("ต้องการลบโน้ตนี้ใช่หรือไม่?");
+        if (!ok) return;
+
+        showLoading(true);
+        try {
+          const { error } = await supabase.from("notes").delete().eq("id", note.id);
+          if (error) throw error;
+
+          notes = notes.filter(n => n.id !== note.id);
+          if (editingNoteId === note.id) resetNoteForm();
+          renderNotes();
+          showToast("ลบโน้ตสำเร็จ", "trash-2");
+        } catch (e) {
+          console.error(e);
+          showToast("ลบโน้ตล้มเหลว", "alert-circle");
+        }
+        showLoading(false);
+      }
+    }
+
+    // --- End Notes Section ---
 
     function formatDate(value) {
       if (!value) return "";
