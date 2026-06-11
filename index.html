@@ -4,21 +4,21 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>คลังข้อมูลของ MIX NATTANON</title>
-  <link rel="icon" href="logo.png" type="image/png" />
+  <link rel="icon" href="logo02.png" type="image/png" />
 
   <!-- SEO / Open Graph Meta Tags -->
-  <meta name="description" content="คลังข้อมูลของ MIX NATTANON - เครื่องมือสำหรับจัดเก็บและจัดการพรอมต์ AI และบันทึกโน้ตส่วนตัว เข้าถึงได้จากทุกอุปกรณ์ด้วยระบบ Supabase" />
+  <meta name="description" content="คลังข้อมูลของ MIX NATTANON - เครื่องมือสำหรับจัดเก็บและจัดการพรอมต์ AI และบันทึกโน้ตส่วนตัว เข้าถึงได้จากทุกอุปกรณ์ด้วยระบบ Firebase" />
   <meta property="og:title" content="คลังข้อมูลของ MIX NATTANON" />
-  <meta property="og:description" content="คลังข้อมูลของ MIX NATTANON - เครื่องมือสำหรับจัดเก็บและจัดการพรอมต์ AI และบันทึกโน้ตส่วนตัว เข้าถึงได้จากทุกอุปกรณ์ด้วยระบบ Supabase" />
-  <meta property="og:image" content="https://miximage9999-dev.github.io/MIXIMAGE/logo.png" />
+  <meta property="og:description" content="คลังข้อมูลของ MIX NATTANON - เครื่องมือสำหรับจัดเก็บและจัดการพรอมต์ AI และบันทึกโน้ตส่วนตัว เข้าถึงได้จากทุกอุปกรณ์ด้วยระบบ Firebase" />
+  <meta property="og:image" content="https://miximage9999-dev.github.io/MIXIMAGE/logo02.png" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://miximage9999-dev.github.io/MIXIMAGE/" />
 
   <!-- Twitter Meta Tags -->
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="คลังข้อมูลของ MIX NATTANON" />
-  <meta name="twitter:description" content="คลังข้อมูลของ MIX NATTANON - เครื่องมือสำหรับจัดเก็บและจัดการพรอมต์ AI และบันทึกโน้ตส่วนตัว เข้าถึงได้จากทุกอุปกรณ์ด้วยระบบ Supabase" />
-  <meta name="twitter:image" content="https://miximage9999-dev.github.io/MIXIMAGE/logo.png" />
+  <meta name="twitter:description" content="คลังข้อมูลของ MIX NATTANON - เครื่องมือสำหรับจัดเก็บและจัดการพรอมต์ AI และบันทึกโน้ตส่วนตัว เข้าถึงได้จากทุกอุปกรณ์ด้วยระบบ Firebase" />
+  <meta name="twitter:image" content="https://miximage9999-dev.github.io/MIXIMAGE/logo02.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Thai:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -36,7 +36,9 @@
   </script>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-storage-compat.js"></script>
   <style>
     :root {
       color-scheme: light;
@@ -279,7 +281,7 @@
   <div id="pinOverlay" class="fixed inset-0 z-[100] flex items-center justify-center transition-all duration-500">
     <div class="glass-shell max-w-sm w-full mx-4 p-8 rounded-[1.5rem] text-center flex flex-col items-center gap-6 shadow-2xl" style="background: rgba(15, 23, 42, 0.4); border-color: rgba(255, 255, 255, 0.1);">
             <div class="mb-2">
-        <img src="logo.png" alt="Logo" class="h-20 w-20 object-contain mx-auto rounded-[1.25rem] shadow-lg border border-white/20" />
+        <img src="logo02.png" alt="Logo" class="h-20 w-20 object-contain mx-auto rounded-[1.25rem] shadow-lg border border-white/20" />
       </div>
       <div>
         <h2 class="text-2xl font-extrabold text-white">คลังข้อมูลของ MIX NATTANON</h2>
@@ -315,7 +317,7 @@
     </div>
   </div>
 
-  <!-- Supabase Settings Modal -->
+  <!-- Firebase Settings Modal -->
   <div id="settingsModal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-md hidden transition-all duration-300">
     <div class="glass-shell max-w-md w-full mx-4 p-6 rounded-[1.25rem] shadow-2xl relative">
       <button id="closeSettingsBtn" type="button" class="glass-control absolute right-4 top-4 inline-flex h-9 w-9 items-center justify-center rounded-full text-slate-600">
@@ -326,18 +328,18 @@
           <i data-lucide="settings" class="h-5 w-5"></i>
         </div>
         <div>
-          <h2 class="text-xl font-bold text-slate-900">ตั้งค่าการเชื่อมต่อ Supabase</h2>
+          <h2 class="text-xl font-bold text-slate-900">ตั้งค่าการเชื่อมต่อ Firebase</h2>
           <p class="text-xs font-medium text-slate-500">บันทึกอยู่ในเบราว์เซอร์ของเครื่องนี้</p>
         </div>
       </div>
       <form id="settingsForm" class="space-y-4">
         <label class="block">
-          <span class="mb-2 block text-xs font-bold text-slate-700">SUPABASE URL</span>
-          <input id="supabaseUrlInput" class="field rounded-full px-4 py-2.5 text-sm text-slate-900 placeholder:text-slate-400" type="url" required placeholder="https://your-project.supabase.co" />
+          <span class="mb-2 block text-xs font-bold text-slate-700">FIREBASE API KEY</span>
+          <input id="firebaseApiKeyInput" class="field rounded-full px-4 py-2.5 text-sm text-slate-900 placeholder:text-slate-400" type="password" required placeholder="AIzaSy..." />
         </label>
         <label class="block">
-          <span class="mb-2 block text-xs font-bold text-slate-700">SUPABASE ANON KEY</span>
-          <input id="supabaseKeyInput" class="field rounded-full px-4 py-2.5 text-sm text-slate-900 placeholder:text-slate-400" type="password" required placeholder="your-anon-key" />
+          <span class="mb-2 block text-xs font-bold text-slate-700">FIREBASE PROJECT ID</span>
+          <input id="firebaseProjectIdInput" class="field rounded-full px-4 py-2.5 text-sm text-slate-900 placeholder:text-slate-400" type="text" required placeholder="my-project-12345" />
         </label>
         <div class="flex gap-3 pt-2">
           <button type="submit" class="primary-glass glass-control inline-flex min-h-[2.85rem] flex-1 items-center justify-center gap-2 rounded-full px-4 text-sm font-extrabold">
@@ -346,46 +348,6 @@
           </button>
         </div>
       </form>
-
-      <!-- Diagnostics Panel -->
-      <div class="border-t border-slate-200/50 mt-5 pt-4">
-        <div class="flex items-center justify-between mb-3">
-          <span class="text-sm font-bold text-slate-800">ตรวจสอบโครงสร้างฐานข้อมูล</span>
-          <button id="runDiagnosticsBtn" type="button" class="glass-control inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-bold text-cyan-700">
-            <i data-lucide="play" class="h-3 w-3"></i>
-            เริ่มตรวจ
-          </button>
-        </div>
-        <div id="diagnosticsList" class="space-y-2 text-xs font-semibold text-slate-600 hidden">
-          <div class="flex items-center justify-between p-2 rounded-lg bg-white/40 border border-white/50">
-            <span>การเชื่อมต่อ Supabase</span>
-            <span id="diagConnection" class="flex items-center gap-1">-</span>
-          </div>
-          <div class="flex items-center justify-between p-2 rounded-lg bg-white/40 border border-white/50">
-            <span>ตาราง prompts (คลังพรอมต์)</span>
-            <span id="diagPromptsTable" class="flex items-center gap-1">-</span>
-          </div>
-          <div class="flex items-center justify-between p-2 rounded-lg bg-white/40 border border-white/50">
-            <span>คอลัมน์ page (การแบ่งหน้า)</span>
-            <span id="diagPageColumn" class="flex items-center gap-1">-</span>
-          </div>
-          <div class="flex items-center justify-between p-2 rounded-lg bg-white/40 border border-white/50">
-            <span>ตาราง notes (บันทึกโน้ต)</span>
-            <span id="diagNotesTable" class="flex items-center gap-1">-</span>
-          </div>
-          <div class="flex items-center justify-between p-2 rounded-lg bg-white/40 border border-white/50">
-            <span>Storage Bucket (prompt-images)</span>
-            <span id="diagStorageBucket" class="flex items-center gap-1">-</span>
-          </div>
-          <div id="diagSqlFixContainer" class="hidden mt-3 pt-2 border-t border-slate-200/50">
-            <p class="text-rose-600 font-bold mb-1.5">พบปัญหา! กรุณากดคัดลอก SQL ด้านล่างไปรันใน SQL Editor ของ Supabase</p>
-            <button id="copySqlFixBtn" type="button" class="w-full primary-glass glass-control inline-flex min-h-[2.2rem] items-center justify-center gap-1.5 rounded-full px-3 py-1 text-xs font-extrabold">
-              <i data-lucide="copy" class="h-3.5 w-3.5"></i>
-              คัดลอก SQL แก้ไขปัญหา
-            </button>
-          </div>
-        </div>
-      </div>
     </div>
   </div>
 
@@ -424,7 +386,7 @@
           <i data-lucide="rotate-ccw" class="h-4 w-4"></i>
           ล้างฟอร์ม
         </button>
-        <button id="openSettingsBtn" type="button" class="glass-control inline-flex h-12 w-12 items-center justify-center rounded-full text-slate-700" title="ตั้งค่า Supabase">
+        <button id="openSettingsBtn" type="button" class="glass-control inline-flex h-12 w-12 items-center justify-center rounded-full text-slate-700" title="ตั้งค่า Firebase">
           <i data-lucide="settings" class="h-5 w-5"></i>
         </button>
       </div>
@@ -641,20 +603,9 @@
       openSettingsBtn: document.getElementById("openSettingsBtn"),
       closeSettingsBtn: document.getElementById("closeSettingsBtn"),
       settingsForm: document.getElementById("settingsForm"),
-      supabaseUrlInput: document.getElementById("supabaseUrlInput"),
-      supabaseKeyInput: document.getElementById("supabaseKeyInput"),
+      firebaseApiKeyInput: document.getElementById("firebaseApiKeyInput"),
+      firebaseProjectIdInput: document.getElementById("firebaseProjectIdInput"),
       loadingOverlay: document.getElementById("loadingOverlay"),
-      
-      // Diagnostics Elements
-      runDiagnosticsBtn: document.getElementById("runDiagnosticsBtn"),
-      diagnosticsList: document.getElementById("diagnosticsList"),
-      diagConnection: document.getElementById("diagConnection"),
-      diagPromptsTable: document.getElementById("diagPromptsTable"),
-      diagPageColumn: document.getElementById("diagPageColumn"),
-      diagNotesTable: document.getElementById("diagNotesTable"),
-      diagStorageBucket: document.getElementById("diagStorageBucket"),
-      diagSqlFixContainer: document.getElementById("diagSqlFixContainer"),
-      copySqlFixBtn: document.getElementById("copySqlFixBtn"),
       
       // Main Nav buttons
       navPromptsBtn: document.getElementById("navPromptsBtn"),
@@ -689,187 +640,16 @@
     let currentImageData = null;
     let toastTimer = null;
     let activePage = "pinned";
-    let supabaseClient = null;
-
-    const SQL_FIX = `-- คลังข้อมูลของ MIX NATTANON - SQL Setup Script
--- คัดลอกโค้ดนี้ทั้งหมดไปรันใน SQL Editor ของ Supabase เพื่อแก้ปัญหาตารางหรือคอลัมน์ไม่พบ
-
--- 1. ตาราง prompts (เก็บพรอมต์)
-CREATE TABLE IF NOT EXISTS prompts (
-  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
-  title text,
-  prompt text NOT NULL,
-  notes text,
-  image_url text,
-  pinned boolean DEFAULT false,
-  page text DEFAULT 'main',
-  created_at timestamptz DEFAULT now(),
-  updated_at timestamptz DEFAULT now()
-);
-
--- เพิ่มคอลัมน์ page ในตาราง prompts หากยังไม่มี (สำหรับระบบแบ่งหน้า)
-ALTER TABLE prompts ADD COLUMN IF NOT EXISTS page text DEFAULT 'main';
-
--- 2. ตาราง notes (เก็บโน้ต)
-CREATE TABLE IF NOT EXISTS notes (
-  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
-  title text,
-  content text NOT NULL,
-  created_at timestamptz DEFAULT now(),
-  updated_at timestamptz DEFAULT now()
-);
-
--- 3. เปิดใช้ Row Level Security (RLS) เพื่อป้องกันความปลอดภัย
-ALTER TABLE prompts ENABLE ROW LEVEL SECURITY;
-ALTER TABLE notes ENABLE ROW LEVEL SECURITY;
-
--- 4. สร้างสิทธิ์การเขียนอ่านให้ทุกคน (Public/Anon Policies)
--- สำหรับตาราง prompts
-DROP POLICY IF EXISTS "Allow public read prompts" ON prompts;
-CREATE POLICY "Allow public read prompts" ON prompts FOR SELECT USING (true);
-
-DROP POLICY IF EXISTS "Allow public insert prompts" ON prompts;
-CREATE POLICY "Allow public insert prompts" ON prompts FOR INSERT WITH CHECK (true);
-
-DROP POLICY IF EXISTS "Allow public update prompts" ON prompts;
-CREATE POLICY "Allow public update prompts" ON prompts FOR UPDATE USING (true) WITH CHECK (true);
-
-DROP POLICY IF EXISTS "Allow public delete prompts" ON prompts;
-CREATE POLICY "Allow public delete prompts" ON prompts FOR DELETE USING (true);
-
--- สำหรับตาราง notes
-DROP POLICY IF EXISTS "Allow public read notes" ON notes;
-CREATE POLICY "Allow public read notes" ON notes FOR SELECT USING (true);
-
-DROP POLICY IF EXISTS "Allow public insert notes" ON notes;
-CREATE POLICY "Allow public insert notes" ON notes FOR INSERT WITH CHECK (true);
-
-DROP POLICY IF EXISTS "Allow public update notes" ON notes;
-CREATE POLICY "Allow public update notes" ON notes FOR UPDATE USING (true) WITH CHECK (true);
-
-DROP POLICY IF EXISTS "Allow public delete notes" ON notes;
-CREATE POLICY "Allow public delete notes" ON notes FOR DELETE USING (true);
-`;
-
-    async function runDiagnostics() {
-      if (!supabaseClient) {
-        showToast("กรุณาเชื่อมต่อ Supabase ก่อนตรวจสถานะ", "alert-circle");
-        return;
-      }
-
-      els.diagnosticsList.classList.remove("hidden");
-      
-      const setStatus = (el, status, text) => {
-        if (status === "loading") {
-          el.innerHTML = `<span class="animate-pulse text-slate-400">กำลังตรวจ...</span>`;
-        } else if (status === "success") {
-          el.innerHTML = `<span class="inline-flex items-center gap-1 text-emerald-600 font-bold"><i data-lucide="check-circle" class="h-4 w-4"></i> ${text}</span>`;
-        } else {
-          el.innerHTML = `<span class="inline-flex items-center gap-1 text-rose-500 font-bold" title="${escapeHtml(text)}"><i data-lucide="alert-circle" class="h-4 w-4"></i> ล้มเหลว</span>`;
-        }
-        refreshIcons();
-      };
-
-      setStatus(els.diagConnection, "loading");
-      setStatus(els.diagPromptsTable, "loading");
-      setStatus(els.diagPageColumn, "loading");
-      setStatus(els.diagNotesTable, "loading");
-      setStatus(els.diagStorageBucket, "loading");
-      els.diagSqlFixContainer.classList.add("hidden");
-
-      let hasError = false;
-
-      // 1. Connection check
-      try {
-        const { error } = await supabaseClient.from("prompts").select("id").limit(1);
-        if (error && error.code === "PGRST301") {
-          setStatus(els.diagConnection, "error", "API Key ไม่ถูกต้อง");
-          hasError = true;
-        } else {
-          setStatus(els.diagConnection, "success", "เชื่อมต่อได้");
-        }
-      } catch (err) {
-        setStatus(els.diagConnection, "error", err.message || err);
-        hasError = true;
-      }
-
-      // 2. Prompts Table check
-      try {
-        const { data, error } = await supabaseClient.from("prompts").select("*").limit(1);
-        if (error) {
-          setStatus(els.diagPromptsTable, "error", error.message);
-          setStatus(els.diagPageColumn, "error", "ไม่ได้ตรวจสอบ");
-          hasError = true;
-        } else {
-          setStatus(els.diagPromptsTable, "success", "ปกติ");
-          
-          // 3. Page Column check
-          if (data && data.length > 0 && "page" in data[0]) {
-            setStatus(els.diagPageColumn, "success", "มีคอลัมน์ page");
-          } else {
-            const { error: pageColError } = await supabaseClient.from("prompts").select("page").limit(1);
-            if (pageColError) {
-              setStatus(els.diagPageColumn, "error", "ขาดคอลัมน์ page");
-              hasError = true;
-            } else {
-              setStatus(els.diagPageColumn, "success", "มีคอลัมน์ page");
-            }
-          }
-        }
-      } catch (err) {
-        setStatus(els.diagPromptsTable, "error", err.message || err);
-        setStatus(els.diagPageColumn, "error", "ไม่ได้ตรวจสอบ");
-        hasError = true;
-      }
-
-      // 4. Notes Table check
-      try {
-        const { error } = await supabaseClient.from("notes").select("id").limit(1);
-        if (error) {
-          setStatus(els.diagNotesTable, "error", error.message);
-          hasError = true;
-        } else {
-          setStatus(els.diagNotesTable, "success", "ปกติ");
-        }
-      } catch (err) {
-        setStatus(els.diagNotesTable, "error", err.message || err);
-        hasError = true;
-      }
-
-      // 5. Storage bucket check
-      try {
-        const { data: buckets, error } = await supabaseClient.storage.listBuckets();
-        if (error) {
-          setStatus(els.diagStorageBucket, "error", error.message);
-          hasError = true;
-        } else {
-          const hasImageBucket = buckets.some(b => b.name === "prompt-images");
-          if (hasImageBucket) {
-            setStatus(els.diagStorageBucket, "success", "ปกติ");
-          } else {
-            setStatus(els.diagStorageBucket, "error", "ไม่มี bucket 'prompt-images'");
-            hasError = true;
-          }
-        }
-      } catch (err) {
-        setStatus(els.diagStorageBucket, "error", err.message || err);
-        hasError = true;
-      }
-
-      if (hasError) {
-        els.diagSqlFixContainer.classList.remove("hidden");
-      } else {
-        showToast("ตรวจสอบระบบเสร็จสิ้น ทุกอย่างปกติครับ", "check-circle");
-      }
-    }
+    let db = null;
+    let storage = null;
 
     async function init() {
       initPIN();
-      initSupabase();
+      initFirebase();
       
-      // Only fetch prompts if PIN is already unlocked and Supabase is configured
+      // Only fetch prompts if PIN is already unlocked and Firebase is configured
       if (sessionStorage.getItem("prompt_keeper_unlocked") === "true") {
-        if (supabaseClient) {
+        if (db) {
           prompts = await loadPrompts();
           notes = await loadNotes();
           extractCustomPages();
@@ -909,26 +689,7 @@ CREATE POLICY "Allow public delete notes" ON notes FOR DELETE USING (true);
       els.closeSettingsBtn.addEventListener("click", hideSettingsModal);
       els.settingsForm.addEventListener("submit", handleSettingsSubmit);
       
-      // Diagnostics events
-      els.runDiagnosticsBtn.addEventListener("click", runDiagnostics);
-      els.copySqlFixBtn.addEventListener("click", () => {
-        try {
-          let copied = false;
-          if (navigator.clipboard && window.isSecureContext) {
-            navigator.clipboard.writeText(SQL_FIX).then(() => {
-              showToast("คัดลอกสคริปต์ SQL แก้ปัญหาแล้ว", "copy-check");
-            }).catch(() => {
-              fallbackCopy(SQL_FIX);
-              showToast("คัดลอกสคริปต์ SQL แก้ปัญหาแล้ว", "copy-check");
-            });
-          } else {
-            fallbackCopy(SQL_FIX);
-            showToast("คัดลอกสคริปต์ SQL แก้ปัญหาแล้ว", "copy-check");
-          }
-        } catch (e) {
-          showToast("ไม่สามารถคัดลอกได้", "alert-circle");
-        }
-      });
+
       
       // Dynamic page add
       els.addPageBtn.addEventListener("click", handleAddPage);
@@ -1055,7 +816,7 @@ CREATE POLICY "Allow public delete notes" ON notes FOR DELETE USING (true);
             }, 500);
             
             // Post-unlock setup
-            if (initSupabase()) {
+            if (initFirebase()) {
               prompts = await loadPrompts();
               notes = await loadNotes();
               extractCustomPages();
@@ -1095,16 +856,26 @@ CREATE POLICY "Allow public delete notes" ON notes FOR DELETE USING (true);
       });
     }
 
-    function initSupabase() {
-      const url = localStorage.getItem("supabase_url");
-      const key = localStorage.getItem("supabase_anon_key");
-      if (url && key) {
+    function initFirebase() {
+      const apiKey = localStorage.getItem("firebase_api_key");
+      const projectId = localStorage.getItem("firebase_project_id");
+      if (apiKey && projectId) {
         try {
-          supabaseClient = window.supabase.createClient(url, key);
+          const config = {
+            apiKey,
+            authDomain: `${projectId}.firebaseapp.com`,
+            projectId,
+            storageBucket: `${projectId}.firebasestorage.app`,
+          };
+          if (!firebase.apps.length) {
+            firebase.initializeApp(config);
+          }
+          db = firebase.firestore();
+          storage = firebase.storage();
           return true;
         } catch (error) {
-          console.error("Failed to initialize Supabase client", error);
-          showToast("ตั้งค่า URL หรือ Key ของ Supabase ไม่ถูกต้อง", "alert-triangle");
+          console.error("Failed to initialize Firebase", error);
+          showToast("ตั้งค่า Firebase ไม่ถูกต้อง: " + (error.message || error), "alert-triangle");
           return false;
         }
       }
@@ -1112,8 +883,8 @@ CREATE POLICY "Allow public delete notes" ON notes FOR DELETE USING (true);
     }
 
     function showSettingsModal() {
-      els.supabaseUrlInput.value = localStorage.getItem("supabase_url") || "";
-      els.supabaseKeyInput.value = localStorage.getItem("supabase_anon_key") || "";
+      els.firebaseApiKeyInput.value = localStorage.getItem("firebase_api_key") || "";
+      els.firebaseProjectIdInput.value = localStorage.getItem("firebase_project_id") || "";
       els.settingsModal.classList.remove("hidden");
     }
 
@@ -1131,16 +902,16 @@ CREATE POLICY "Allow public delete notes" ON notes FOR DELETE USING (true);
 
     async function handleSettingsSubmit(e) {
       e.preventDefault();
-      const url = els.supabaseUrlInput.value.trim();
-      const key = els.supabaseKeyInput.value.trim();
+      const apiKey = els.firebaseApiKeyInput.value.trim();
+      const projectId = els.firebaseProjectIdInput.value.trim();
       
-      localStorage.setItem("supabase_url", url);
-      localStorage.setItem("supabase_anon_key", key);
+      localStorage.setItem("firebase_api_key", apiKey);
+      localStorage.setItem("firebase_project_id", projectId);
       
       hideSettingsModal();
       showToast("บันทึกการตั้งค่าแล้ว กำลังเชื่อมต่อ...", "settings");
       
-      if (initSupabase()) {
+      if (initFirebase()) {
         prompts = await loadPrompts();
         notes = await loadNotes();
         extractCustomPages();
@@ -1152,37 +923,31 @@ CREATE POLICY "Allow public delete notes" ON notes FOR DELETE USING (true);
     }
 
     async function loadPrompts() {
-      if (!supabaseClient) return [];
+      if (!db) return [];
       showLoading(true);
       try {
-        const { data, error } = await supabaseClient
-          .from("prompts")
-          .select("*")
-          .order("created_at", { ascending: false });
-          
+        const snapshot = await db.collection("prompts")
+          .orderBy("created_at", "desc")
+          .get();
         showLoading(false);
-        if (error) throw error;
-        return data || [];
+        return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       } catch (error) {
         console.error("Error loading prompts:", error);
-        showToast("ดึงข้อมูลจาก Supabase ล้มเหลว: " + (error.message || error), "alert-circle");
+        showToast("ดึงข้อมูลล้มเหลว: " + (error.message || error), "alert-circle");
         showLoading(false);
         return [];
       }
     }
 
     async function loadNotes() {
-      if (!supabaseClient) return [];
+      if (!db) return [];
       showLoading(true);
       try {
-        const { data, error } = await supabaseClient
-          .from("notes")
-          .select("*")
-          .order("created_at", { ascending: false });
-          
+        const snapshot = await db.collection("notes")
+          .orderBy("created_at", "desc")
+          .get();
         showLoading(false);
-        if (error) throw error;
-        return data || [];
+        return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       } catch (error) {
         console.error("Error loading notes:", error);
         showToast("ดึงข้อมูลโน้ตล้มเหลว: " + (error.message || error), "alert-circle");
@@ -1196,7 +961,7 @@ CREATE POLICY "Allow public delete notes" ON notes FOR DELETE USING (true);
       return items.some((item) => item.pinned) ? "pinned" : "main";
     }
 
-    // Convert Base64 dataURL to Blob for Supabase storage upload
+    // Convert Base64 dataURL to Blob for Firebase storage upload
     function dataURLtoBlob(dataurl) {
       const arr = dataurl.split(',');
       const mime = arr[0].match(/:(.*?);/)[1];
@@ -1209,51 +974,37 @@ CREATE POLICY "Allow public delete notes" ON notes FOR DELETE USING (true);
       return new Blob([u8arr], { type: mime });
     }
 
-    async function uploadImageToSupabase(dataUrl) {
-      if (!supabaseClient) return null;
+    async function uploadImageToFirebase(dataUrl) {
+      if (!storage) return null;
       try {
         const blob = dataURLtoBlob(dataUrl);
         const ext = blob.type.split('/')[1] || 'jpg';
-        const path = `${Date.now()}_${Math.random().toString(36).substring(2, 9)}.${ext}`;
-        
-        const { data, error } = await supabaseClient.storage
-          .from("prompt-images")
-          .upload(path, blob, {
-            contentType: blob.type
-          });
-          
-        if (error) throw error;
-        
-        const { data: { publicUrl } } = supabaseClient.storage
-          .from("prompt-images")
-          .getPublicUrl(path);
-          
-        return publicUrl;
+        const path = `prompt-images/${Date.now()}_${Math.random().toString(36).substring(2, 9)}.${ext}`;
+        const ref = storage.ref(path);
+        await ref.put(blob, { contentType: blob.type });
+        return await ref.getDownloadURL();
       } catch (error) {
         console.error("Image upload failed:", error);
-        showToast("อัปโหลดรูปภาพไม่สำเร็จ", "alert-circle");
+        showToast("อัปโหลดรูปภาพไม่สำเร็จ: " + (error.message || error), "alert-circle");
         return null;
       }
     }
 
-    async function deleteImageFromSupabase(url) {
-      if (!supabaseClient || !url) return;
+    async function deleteImageFromFirebase(url) {
+      if (!storage || !url) return;
       try {
-        const parts = url.split('/prompt-images/');
-        if (parts.length > 1) {
-          const path = parts[1];
-          await supabaseClient.storage.from("prompt-images").remove([path]);
-        }
+        const ref = storage.refFromURL(url);
+        await ref.delete();
       } catch (error) {
-        console.warn("Could not delete image from Supabase Storage:", error);
+        console.warn("Could not delete image from Firebase Storage:", error);
       }
     }
 
     async function handleSave(event) {
       event.preventDefault();
 
-      if (!supabaseClient) {
-        showToast("กรุณาเชื่อมต่อกับ Supabase ก่อน", "alert-circle");
+      if (!db) {
+        showToast("กรุณาเชื่อมต่อกับ Firebase ก่อน", "alert-circle");
         showSettingsModal();
         return;
       }
@@ -1273,7 +1024,7 @@ CREATE POLICY "Allow public delete notes" ON notes FOR DELETE USING (true);
       let imageUrl = currentImageData;
 
       if (selectedImageData) {
-        imageUrl = await uploadImageToSupabase(selectedImageData);
+        imageUrl = await uploadImageToFirebase(selectedImageData);
         if (!imageUrl) {
           showLoading(false);
           return;
@@ -1283,14 +1034,14 @@ CREATE POLICY "Allow public delete notes" ON notes FOR DELETE USING (true);
         if (editingId) {
           const oldItem = prompts.find((item) => item.id === editingId);
           if (oldItem && oldItem.image_url) {
-            await deleteImageFromSupabase(oldItem.image_url);
+            await deleteImageFromFirebase(oldItem.image_url);
           }
         }
       } else if (currentImageData === null && editingId) {
         // Image was removed by user
         const oldItem = prompts.find((item) => item.id === editingId);
         if (oldItem && oldItem.image_url) {
-          await deleteImageFromSupabase(oldItem.image_url);
+          await deleteImageFromFirebase(oldItem.image_url);
         }
       }
 
@@ -1298,19 +1049,14 @@ CREATE POLICY "Allow public delete notes" ON notes FOR DELETE USING (true);
 
       if (editingId) {
         try {
-          const { error } = await supabaseClient
-            .from("prompts")
-            .update({
-              title,
-              prompt,
-              notes: notesVal,
-              image_url: imageUrl,
-              page,
-              updated_at: now
-            })
-            .eq("id", editingId);
-
-          if (error) throw error;
+          await db.collection("prompts").doc(editingId).update({
+            title,
+            prompt,
+            notes: notesVal,
+            image_url: imageUrl,
+            page,
+            updated_at: now
+          });
 
           const index = prompts.findIndex((item) => item.id === editingId);
           if (index !== -1) {
@@ -1343,16 +1089,8 @@ CREATE POLICY "Allow public delete notes" ON notes FOR DELETE USING (true);
             updated_at: now
           };
 
-          const { data, error } = await supabaseClient
-            .from("prompts")
-            .insert([newItem])
-            .select();
-
-          if (error) throw error;
-          
-          if (data && data[0]) {
-            prompts.unshift(data[0]);
-          }
+          const docRef = await db.collection("prompts").add(newItem);
+          prompts.unshift({ id: docRef.id, ...newItem });
           activePage = page;
           showToast("บันทึกและล็อกการ์ดแล้ว", "lock");
         } catch (error) {
@@ -1519,23 +1257,18 @@ CREATE POLICY "Allow public delete notes" ON notes FOR DELETE USING (true);
       const ok = confirm(`ลบ "${item.title || "พรอมต์นี้"}" ใช่ไหม?`);
       if (!ok) return;
 
-      if (!supabaseClient) {
-        showToast("กรุณาเชื่อมต่อกับ Supabase", "alert-circle");
+      if (!db) {
+        showToast("กรุณาเชื่อมต่อกับ Firebase", "alert-circle");
         return;
       }
 
       showLoading(true);
       try {
         if (item.image_url) {
-          await deleteImageFromSupabase(item.image_url);
+          await deleteImageFromFirebase(item.image_url);
         }
 
-        const { error } = await supabaseClient
-          .from("prompts")
-          .delete()
-          .eq("id", item.id);
-
-        if (error) throw error;
+        await db.collection("prompts").doc(item.id).delete();
 
         prompts = prompts.filter((prompt) => prompt.id !== item.id);
         if (editingId === item.id) resetForm(false);
@@ -1551,20 +1284,18 @@ CREATE POLICY "Allow public delete notes" ON notes FOR DELETE USING (true);
     }
 
     async function togglePin(item) {
-      if (!supabaseClient) {
-        showToast("กรุณาเชื่อมต่อกับ Supabase", "alert-circle");
+      if (!db) {
+        showToast("กรุณาเชื่อมต่อกับ Firebase", "alert-circle");
         return;
       }
 
       const newPinned = !item.pinned;
       showLoading(true);
       try {
-        const { error } = await supabaseClient
-          .from("prompts")
-          .update({ pinned: newPinned, updated_at: new Date().toISOString() })
-          .eq("id", item.id);
-
-        if (error) throw error;
+        await db.collection("prompts").doc(item.id).update({
+          pinned: newPinned,
+          updated_at: new Date().toISOString()
+        });
 
         const index = prompts.findIndex((prompt) => prompt.id === item.id);
         if (index !== -1) {
@@ -1787,8 +1518,8 @@ CREATE POLICY "Allow public delete notes" ON notes FOR DELETE USING (true);
 
     async function handleNoteSave(e) {
       e.preventDefault();
-      if (!supabaseClient) {
-        showToast("กรุณาเชื่อมต่อกับ Supabase ก่อน", "alert-circle");
+      if (!db) {
+        showToast("กรุณาเชื่อมต่อกับ Firebase ก่อน", "alert-circle");
         showSettingsModal();
         return;
       }
@@ -1806,12 +1537,7 @@ CREATE POLICY "Allow public delete notes" ON notes FOR DELETE USING (true);
 
       if (editingNoteId) {
         try {
-          const { error } = await supabaseClient
-            .from("notes")
-            .update({ title, content, updated_at: now })
-            .eq("id", editingNoteId);
-
-          if (error) throw error;
+          await db.collection("notes").doc(editingNoteId).update({ title, content, updated_at: now });
 
           const idx = notes.findIndex(n => n.id === editingNoteId);
           if (idx !== -1) {
@@ -1824,15 +1550,9 @@ CREATE POLICY "Allow public delete notes" ON notes FOR DELETE USING (true);
         }
       } else {
         try {
-          const { data, error } = await supabaseClient
-            .from("notes")
-            .insert([{ title, content, created_at: now, updated_at: now }])
-            .select();
-
-          if (error) throw error;
-          
-          if (data && data[0]) {
-            notes.unshift(data[0]);
+          const docRef = await db.collection("notes").add({ title, content, created_at: now, updated_at: now });
+          if (docRef.id) {
+            notes.unshift({ id: docRef.id, title, content, created_at: now, updated_at: now });
           }
           showToast("บันทึกโน้ตใหม่แล้ว", "check");
         } catch (error) {
@@ -1898,8 +1618,7 @@ CREATE POLICY "Allow public delete notes" ON notes FOR DELETE USING (true);
 
         showLoading(true);
         try {
-          const { error } = await supabaseClient.from("notes").delete().eq("id", note.id);
-          if (error) throw error;
+          await db.collection("notes").doc(note.id).delete();
 
           notes = notes.filter(n => n.id !== note.id);
           if (editingNoteId === note.id) resetNoteForm();
