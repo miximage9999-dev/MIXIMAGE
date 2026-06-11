@@ -346,6 +346,46 @@
           </button>
         </div>
       </form>
+
+      <!-- Diagnostics Panel -->
+      <div class="border-t border-slate-200/50 mt-5 pt-4">
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-sm font-bold text-slate-800">ตรวจสอบโครงสร้างฐานข้อมูล</span>
+          <button id="runDiagnosticsBtn" type="button" class="glass-control inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-bold text-cyan-700">
+            <i data-lucide="play" class="h-3 w-3"></i>
+            เริ่มตรวจ
+          </button>
+        </div>
+        <div id="diagnosticsList" class="space-y-2 text-xs font-semibold text-slate-600 hidden">
+          <div class="flex items-center justify-between p-2 rounded-lg bg-white/40 border border-white/50">
+            <span>การเชื่อมต่อ Supabase</span>
+            <span id="diagConnection" class="flex items-center gap-1">-</span>
+          </div>
+          <div class="flex items-center justify-between p-2 rounded-lg bg-white/40 border border-white/50">
+            <span>ตาราง prompts (คลังพรอมต์)</span>
+            <span id="diagPromptsTable" class="flex items-center gap-1">-</span>
+          </div>
+          <div class="flex items-center justify-between p-2 rounded-lg bg-white/40 border border-white/50">
+            <span>คอลัมน์ page (การแบ่งหน้า)</span>
+            <span id="diagPageColumn" class="flex items-center gap-1">-</span>
+          </div>
+          <div class="flex items-center justify-between p-2 rounded-lg bg-white/40 border border-white/50">
+            <span>ตาราง notes (บันทึกโน้ต)</span>
+            <span id="diagNotesTable" class="flex items-center gap-1">-</span>
+          </div>
+          <div class="flex items-center justify-between p-2 rounded-lg bg-white/40 border border-white/50">
+            <span>Storage Bucket (prompt-images)</span>
+            <span id="diagStorageBucket" class="flex items-center gap-1">-</span>
+          </div>
+          <div id="diagSqlFixContainer" class="hidden mt-3 pt-2 border-t border-slate-200/50">
+            <p class="text-rose-600 font-bold mb-1.5">พบปัญหา! กรุณากดคัดลอก SQL ด้านล่างไปรันใน SQL Editor ของ Supabase</p>
+            <button id="copySqlFixBtn" type="button" class="w-full primary-glass glass-control inline-flex min-h-[2.2rem] items-center justify-center gap-1.5 rounded-full px-3 py-1 text-xs font-extrabold">
+              <i data-lucide="copy" class="h-3.5 w-3.5"></i>
+              คัดลอก SQL แก้ไขปัญหา
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -605,6 +645,17 @@
       supabaseKeyInput: document.getElementById("supabaseKeyInput"),
       loadingOverlay: document.getElementById("loadingOverlay"),
       
+      // Diagnostics Elements
+      runDiagnosticsBtn: document.getElementById("runDiagnosticsBtn"),
+      diagnosticsList: document.getElementById("diagnosticsList"),
+      diagConnection: document.getElementById("diagConnection"),
+      diagPromptsTable: document.getElementById("diagPromptsTable"),
+      diagPageColumn: document.getElementById("diagPageColumn"),
+      diagNotesTable: document.getElementById("diagNotesTable"),
+      diagStorageBucket: document.getElementById("diagStorageBucket"),
+      diagSqlFixContainer: document.getElementById("diagSqlFixContainer"),
+      copySqlFixBtn: document.getElementById("copySqlFixBtn"),
+      
       // Main Nav buttons
       navPromptsBtn: document.getElementById("navPromptsBtn"),
       navNotesBtn: document.getElementById("navNotesBtn"),
@@ -639,6 +690,178 @@
     let toastTimer = null;
     let activePage = "pinned";
     let supabaseClient = null;
+
+    const SQL_FIX = `-- คลังข้อมูลของ MIX NATTANON - SQL Setup Script
+-- คัดลอกโค้ดนี้ทั้งหมดไปรันใน SQL Editor ของ Supabase เพื่อแก้ปัญหาตารางหรือคอลัมน์ไม่พบ
+
+-- 1. ตาราง prompts (เก็บพรอมต์)
+CREATE TABLE IF NOT EXISTS prompts (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  title text,
+  prompt text NOT NULL,
+  notes text,
+  image_url text,
+  pinned boolean DEFAULT false,
+  page text DEFAULT 'main',
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now()
+);
+
+-- เพิ่มคอลัมน์ page ในตาราง prompts หากยังไม่มี (สำหรับระบบแบ่งหน้า)
+ALTER TABLE prompts ADD COLUMN IF NOT EXISTS page text DEFAULT 'main';
+
+-- 2. ตาราง notes (เก็บโน้ต)
+CREATE TABLE IF NOT EXISTS notes (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  title text,
+  content text NOT NULL,
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now()
+);
+
+-- 3. เปิดใช้ Row Level Security (RLS) เพื่อป้องกันความปลอดภัย
+ALTER TABLE prompts ENABLE ROW LEVEL SECURITY;
+ALTER TABLE notes ENABLE ROW LEVEL SECURITY;
+
+-- 4. สร้างสิทธิ์การเขียนอ่านให้ทุกคน (Public/Anon Policies)
+-- สำหรับตาราง prompts
+DROP POLICY IF EXISTS "Allow public read prompts" ON prompts;
+CREATE POLICY "Allow public read prompts" ON prompts FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Allow public insert prompts" ON prompts;
+CREATE POLICY "Allow public insert prompts" ON prompts FOR INSERT WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Allow public update prompts" ON prompts;
+CREATE POLICY "Allow public update prompts" ON prompts FOR UPDATE USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Allow public delete prompts" ON prompts;
+CREATE POLICY "Allow public delete prompts" ON prompts FOR DELETE USING (true);
+
+-- สำหรับตาราง notes
+DROP POLICY IF EXISTS "Allow public read notes" ON notes;
+CREATE POLICY "Allow public read notes" ON notes FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Allow public insert notes" ON notes;
+CREATE POLICY "Allow public insert notes" ON notes FOR INSERT WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Allow public update notes" ON notes;
+CREATE POLICY "Allow public update notes" ON notes FOR UPDATE USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Allow public delete notes" ON notes;
+CREATE POLICY "Allow public delete notes" ON notes FOR DELETE USING (true);
+`;
+
+    async function runDiagnostics() {
+      if (!supabaseClient) {
+        showToast("กรุณาเชื่อมต่อ Supabase ก่อนตรวจสถานะ", "alert-circle");
+        return;
+      }
+
+      els.diagnosticsList.classList.remove("hidden");
+      
+      const setStatus = (el, status, text) => {
+        if (status === "loading") {
+          el.innerHTML = `<span class="animate-pulse text-slate-400">กำลังตรวจ...</span>`;
+        } else if (status === "success") {
+          el.innerHTML = `<span class="inline-flex items-center gap-1 text-emerald-600 font-bold"><i data-lucide="check-circle" class="h-4 w-4"></i> ${text}</span>`;
+        } else {
+          el.innerHTML = `<span class="inline-flex items-center gap-1 text-rose-500 font-bold" title="${escapeHtml(text)}"><i data-lucide="alert-circle" class="h-4 w-4"></i> ล้มเหลว</span>`;
+        }
+        refreshIcons();
+      };
+
+      setStatus(els.diagConnection, "loading");
+      setStatus(els.diagPromptsTable, "loading");
+      setStatus(els.diagPageColumn, "loading");
+      setStatus(els.diagNotesTable, "loading");
+      setStatus(els.diagStorageBucket, "loading");
+      els.diagSqlFixContainer.classList.add("hidden");
+
+      let hasError = false;
+
+      // 1. Connection check
+      try {
+        const { error } = await supabaseClient.from("prompts").select("id").limit(1);
+        if (error && error.code === "PGRST301") {
+          setStatus(els.diagConnection, "error", "API Key ไม่ถูกต้อง");
+          hasError = true;
+        } else {
+          setStatus(els.diagConnection, "success", "เชื่อมต่อได้");
+        }
+      } catch (err) {
+        setStatus(els.diagConnection, "error", err.message || err);
+        hasError = true;
+      }
+
+      // 2. Prompts Table check
+      try {
+        const { data, error } = await supabaseClient.from("prompts").select("*").limit(1);
+        if (error) {
+          setStatus(els.diagPromptsTable, "error", error.message);
+          setStatus(els.diagPageColumn, "error", "ไม่ได้ตรวจสอบ");
+          hasError = true;
+        } else {
+          setStatus(els.diagPromptsTable, "success", "ปกติ");
+          
+          // 3. Page Column check
+          if (data && data.length > 0 && "page" in data[0]) {
+            setStatus(els.diagPageColumn, "success", "มีคอลัมน์ page");
+          } else {
+            const { error: pageColError } = await supabaseClient.from("prompts").select("page").limit(1);
+            if (pageColError) {
+              setStatus(els.diagPageColumn, "error", "ขาดคอลัมน์ page");
+              hasError = true;
+            } else {
+              setStatus(els.diagPageColumn, "success", "มีคอลัมน์ page");
+            }
+          }
+        }
+      } catch (err) {
+        setStatus(els.diagPromptsTable, "error", err.message || err);
+        setStatus(els.diagPageColumn, "error", "ไม่ได้ตรวจสอบ");
+        hasError = true;
+      }
+
+      // 4. Notes Table check
+      try {
+        const { error } = await supabaseClient.from("notes").select("id").limit(1);
+        if (error) {
+          setStatus(els.diagNotesTable, "error", error.message);
+          hasError = true;
+        } else {
+          setStatus(els.diagNotesTable, "success", "ปกติ");
+        }
+      } catch (err) {
+        setStatus(els.diagNotesTable, "error", err.message || err);
+        hasError = true;
+      }
+
+      // 5. Storage bucket check
+      try {
+        const { data: buckets, error } = await supabaseClient.storage.listBuckets();
+        if (error) {
+          setStatus(els.diagStorageBucket, "error", error.message);
+          hasError = true;
+        } else {
+          const hasImageBucket = buckets.some(b => b.name === "prompt-images");
+          if (hasImageBucket) {
+            setStatus(els.diagStorageBucket, "success", "ปกติ");
+          } else {
+            setStatus(els.diagStorageBucket, "error", "ไม่มี bucket 'prompt-images'");
+            hasError = true;
+          }
+        }
+      } catch (err) {
+        setStatus(els.diagStorageBucket, "error", err.message || err);
+        hasError = true;
+      }
+
+      if (hasError) {
+        els.diagSqlFixContainer.classList.remove("hidden");
+      } else {
+        showToast("ตรวจสอบระบบเสร็จสิ้น ทุกอย่างปกติครับ", "check-circle");
+      }
+    }
 
     async function init() {
       initPIN();
@@ -685,6 +908,27 @@
       els.openSettingsBtn.addEventListener("click", showSettingsModal);
       els.closeSettingsBtn.addEventListener("click", hideSettingsModal);
       els.settingsForm.addEventListener("submit", handleSettingsSubmit);
+      
+      // Diagnostics events
+      els.runDiagnosticsBtn.addEventListener("click", runDiagnostics);
+      els.copySqlFixBtn.addEventListener("click", () => {
+        try {
+          let copied = false;
+          if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(SQL_FIX).then(() => {
+              showToast("คัดลอกสคริปต์ SQL แก้ปัญหาแล้ว", "copy-check");
+            }).catch(() => {
+              fallbackCopy(SQL_FIX);
+              showToast("คัดลอกสคริปต์ SQL แก้ปัญหาแล้ว", "copy-check");
+            });
+          } else {
+            fallbackCopy(SQL_FIX);
+            showToast("คัดลอกสคริปต์ SQL แก้ปัญหาแล้ว", "copy-check");
+          }
+        } catch (e) {
+          showToast("ไม่สามารถคัดลอกได้", "alert-circle");
+        }
+      });
       
       // Dynamic page add
       els.addPageBtn.addEventListener("click", handleAddPage);
@@ -921,7 +1165,7 @@
         return data || [];
       } catch (error) {
         console.error("Error loading prompts:", error);
-        showToast("ดึงข้อมูลจาก Supabase ล้มเหลว", "alert-circle");
+        showToast("ดึงข้อมูลจาก Supabase ล้มเหลว: " + (error.message || error), "alert-circle");
         showLoading(false);
         return [];
       }
@@ -941,7 +1185,7 @@
         return data || [];
       } catch (error) {
         console.error("Error loading notes:", error);
-        showToast("ดึงข้อมูลโน้ตล้มเหลว", "alert-circle");
+        showToast("ดึงข้อมูลโน้ตล้มเหลว: " + (error.message || error), "alert-circle");
         showLoading(false);
         return [];
       }
@@ -1084,7 +1328,7 @@
           showToast("บันทึกการแก้ไขและล็อกแล้ว", "lock");
         } catch (error) {
           console.error("Error updating prompt:", error);
-          showToast("บันทึกข้อมูลล้มเหลว", "alert-circle");
+          showToast("บันทึกข้อมูลล้มเหลว: " + (error.message || error), "alert-circle");
         }
       } else {
         try {
@@ -1113,7 +1357,7 @@
           showToast("บันทึกและล็อกการ์ดแล้ว", "lock");
         } catch (error) {
           console.error("Error inserting prompt:", error);
-          showToast("บันทึกข้อมูลล้มเหลว", "alert-circle");
+          showToast("บันทึกข้อมูลล้มเหลว: " + (error.message || error), "alert-circle");
         }
       }
 
@@ -1301,7 +1545,7 @@
         showToast("ลบการ์ดแล้ว", "trash-2");
       } catch (error) {
         console.error("Error deleting prompt:", error);
-        showToast("ลบข้อมูลไม่สำเร็จ", "alert-circle");
+        showToast("ลบข้อมูลไม่สำเร็จ: " + (error.message || error), "alert-circle");
       }
       showLoading(false);
     }
@@ -1337,7 +1581,7 @@
         showToast(newPinned ? "ปักหมุดไปหน้า 1 แล้ว" : "ย้ายกลับแล้ว", newPinned ? "pin" : "pin-off");
       } catch (error) {
         console.error("Error pinning prompt:", error);
-        showToast("เปลี่ยนสถานะปักหมุดไม่สำเร็จ", "alert-circle");
+        showToast("เปลี่ยนสถานะปักหมุดไม่สำเร็จ: " + (error.message || error), "alert-circle");
       }
       showLoading(false);
     }
@@ -1576,7 +1820,7 @@
           showToast("บันทึกโน้ตสำเร็จแล้ว", "check");
         } catch (error) {
           console.error(error);
-          showToast("บันทึกโน้ตล้มเหลว", "alert-circle");
+          showToast("บันทึกโน้ตล้มเหลว: " + (error.message || error), "alert-circle");
         }
       } else {
         try {
@@ -1593,7 +1837,7 @@
           showToast("บันทึกโน้ตใหม่แล้ว", "check");
         } catch (error) {
           console.error(error);
-          showToast("บันทึกโน้ตล้มเหลว", "alert-circle");
+          showToast("บันทึกโน้ตล้มเหลว: " + (error.message || error), "alert-circle");
         }
       }
 
@@ -1663,7 +1907,7 @@
           showToast("ลบโน้ตสำเร็จ", "trash-2");
         } catch (e) {
           console.error(e);
-          showToast("ลบโน้ตล้มเหลว", "alert-circle");
+          showToast("ลบโน้ตล้มเหลว: " + (e.message || e), "alert-circle");
         }
         showLoading(false);
       }
